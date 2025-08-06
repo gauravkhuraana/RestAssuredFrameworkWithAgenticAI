@@ -1,5 +1,5 @@
-# Use OpenJDK 11 for better REST Assured compatibility
-FROM openjdk:11-jdk-slim
+# Use OpenJDK 17 for compatibility with project configuration
+FROM openjdk:17-jdk-slim
 
 # Set working directory
 WORKDIR /app
