@@ -93,7 +93,7 @@ jobs:
     
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-${{ matrix.environment }}-${{ matrix.java-version }}
         path: |
@@ -104,14 +104,14 @@ jobs:
     
     - name: Upload Extent Reports
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: extent-reports-${{ matrix.environment }}-${{ matrix.java-version }}
         path: test-output/extent-reports/
     
     - name: Upload Allure Results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: allure-results-${{ matrix.environment }}-${{ matrix.java-version }}
         path: target/allure-results/
