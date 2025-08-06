@@ -2,6 +2,7 @@ package com.api.automation.tests.connectivity;
 
 import com.api.automation.client.BaseApiClient;
 import com.api.automation.tests.base.BaseTest;
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,11 @@ public class ConnectivityTest extends BaseTest {
         logStep("Testing invalid endpoint response");
         
         try {
-            Response response = apiClient.get("/invalid-endpoint");
+            // For invalid endpoint test, use direct RestAssured without retry to avoid false failures
+            Response response = RestAssured.given()
+                .spec(apiClient.getRequestSpec())
+                .when()
+                .get("/invalid-endpoint");
             
             logStep("Verify 404 status for invalid endpoint");
             response.then().statusCode(404);
@@ -80,7 +85,7 @@ public class ConnectivityTest extends BaseTest {
         } catch (Exception e) {
             logStep("Handling exception for invalid endpoint test: " + e.getMessage());
             // For invalid endpoints, we might get different types of responses
-            // This is acceptable behavior
+            // This is acceptable behavior for connectivity testing
             logVerification("Invalid endpoint test completed - endpoint correctly rejected");
         }
     }

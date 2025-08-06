@@ -78,12 +78,31 @@ public class RetryHandler {
      */
     private static boolean shouldNotRetry(Exception e) {
         // Don't retry on assertion errors, illegal arguments, etc.
-        return (e instanceof RuntimeException && 
-                (e.getClass().getSimpleName().contains("AssertionError") ||
-                 e instanceof IllegalArgumentException ||
-                 e instanceof IllegalStateException ||
-                 e instanceof UnsupportedOperationException)) ||
-               (e.getMessage() != null && e.getMessage().contains("404"));
+        if (e instanceof RuntimeException && 
+            (e.getClass().getSimpleName().contains("AssertionError") ||
+             e instanceof IllegalArgumentException ||
+             e instanceof IllegalStateException ||
+             e instanceof UnsupportedOperationException)) {
+            return true;
+        }
+        
+        // Don't retry on valid HTTP response codes (4xx client errors)
+        // These are expected responses and should not be retried
+        String message = e.getMessage();
+        if (message != null) {
+            // Check for common HTTP status codes that shouldn't be retried
+            return message.contains("404") || 
+                   message.contains("400") || 
+                   message.contains("401") || 
+                   message.contains("403") || 
+                   message.contains("405") ||
+                   message.contains("409") ||
+                   message.contains("422") ||
+                   message.contains("status code") ||
+                   message.contains("Expected status code");
+        }
+        
+        return false;
     }
 
     /**
