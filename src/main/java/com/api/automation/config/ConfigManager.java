@@ -34,11 +34,23 @@ public class ConfigManager {
         
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(configFile)) {
             if (inputStream == null) {
-                logger.error("Configuration file not found: {}", configFile);
-                throw new RuntimeException("Configuration file not found: " + configFile);
+                logger.warn("Configuration file not found: {}, trying to load default dev.properties", configFile);
+                // Fallback to dev.properties if environment-specific file not found
+                try (InputStream fallbackStream = getClass().getClassLoader().getResourceAsStream("config/dev.properties")) {
+                    if (fallbackStream == null) {
+                        logger.error("Default configuration file also not found: config/dev.properties");
+                        throw new RuntimeException("Configuration file not found: " + configFile);
+                    }
+                    properties.load(fallbackStream);
+                    logger.info("Loaded fallback configuration from dev.properties for environment: {}", environment);
+                } catch (IOException e) {
+                    logger.error("Error loading fallback configuration file", e);
+                    throw new RuntimeException("Error loading fallback configuration file", e);
+                }
+            } else {
+                properties.load(inputStream);
+                logger.info("Loaded configuration for environment: {}", environment);
             }
-            properties.load(inputStream);
-            logger.info("Loaded configuration for environment: {}", environment);
         } catch (IOException e) {
             logger.error("Error loading configuration file: {}", configFile, e);
             throw new RuntimeException("Error loading configuration file: " + configFile, e);
@@ -54,7 +66,12 @@ public class ConfigManager {
     }
 
     public String getProperty(String key, String defaultValue) {
-        return properties.getProperty(key, defaultValue);
+        String value = properties.getProperty(key, defaultValue);
+        if (value == null || value.isEmpty()) {
+            logger.warn("Property '{}' is null or empty, using default: {}", key, defaultValue);
+            return defaultValue;
+        }
+        return value;
     }
 
     public int getIntProperty(String key) {
@@ -86,7 +103,7 @@ public class ConfigManager {
 
     // Convenience methods for common properties
     public String getBaseUrl() {
-        return getProperty("base.url");
+        return getProperty("base.url", "https://jsonplaceholder.typicode.com");
     }
 
     public int getApiTimeout() {
@@ -106,18 +123,18 @@ public class ConfigManager {
     }
 
     public String getAuthToken() {
-        return getProperty("auth.token");
+        return getProperty("auth.token", "");
     }
 
     public String getAuthUsername() {
-        return getProperty("auth.username");
+        return getProperty("auth.username", "");
     }
 
     public String getAuthPassword() {
-        return getProperty("auth.password");
+        return getProperty("auth.password", "");
     }
 
     public String getApiKey() {
-        return getProperty("auth.api.key");
+        return getProperty("auth.api.key", "");
     }
 }

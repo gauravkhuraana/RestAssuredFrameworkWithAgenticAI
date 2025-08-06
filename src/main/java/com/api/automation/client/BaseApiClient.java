@@ -18,12 +18,30 @@ import java.util.Map;
  */
 public class BaseApiClient {
     protected static final Logger logger = LoggerFactory.getLogger(BaseApiClient.class);
-    protected static final ConfigManager config = ConfigManager.getInstance();
+    protected static final ConfigManager config;
+    
+    static {
+        try {
+            config = ConfigManager.getInstance();
+            logger.debug("ConfigManager initialized successfully");
+        } catch (Exception e) {
+            logger.error("Failed to initialize ConfigManager", e);
+            throw new RuntimeException("Failed to initialize ConfigManager", e);
+        }
+    }
     
     protected RequestSpecification requestSpec;
 
     public BaseApiClient() {
         this.requestSpec = RestAssured.given();
+        // Ensure base configuration is applied
+        if (config != null) {
+            String baseUrl = config.getBaseUrl();
+            if (baseUrl != null && !baseUrl.equals(RestAssured.baseURI)) {
+                logger.debug("Setting base URI for request: {}", baseUrl);
+                this.requestSpec.baseUri(baseUrl);
+            }
+        }
     }
 
     public BaseApiClient(RequestSpecification requestSpec) {
@@ -122,7 +140,12 @@ public class BaseApiClient {
      */
     public Response get(String endpoint) {
         logger.info("Executing GET request to: {}", endpoint);
-        return RetryHandler.executeWithRetry(() -> requestSpec.get(endpoint));
+        try {
+            return RetryHandler.executeWithRetry(() -> requestSpec.get(endpoint));
+        } catch (Exception e) {
+            logger.error("GET request failed for endpoint: {}", endpoint, e);
+            throw new RuntimeException("GET request failed: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -130,7 +153,12 @@ public class BaseApiClient {
      */
     public Response post(String endpoint) {
         logger.info("Executing POST request to: {}", endpoint);
-        return RetryHandler.executeWithRetry(() -> requestSpec.post(endpoint));
+        try {
+            return RetryHandler.executeWithRetry(() -> requestSpec.post(endpoint));
+        } catch (Exception e) {
+            logger.error("POST request failed for endpoint: {}", endpoint, e);
+            throw new RuntimeException("POST request failed: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -138,7 +166,12 @@ public class BaseApiClient {
      */
     public Response put(String endpoint) {
         logger.info("Executing PUT request to: {}", endpoint);
-        return RetryHandler.executeWithRetry(() -> requestSpec.put(endpoint));
+        try {
+            return RetryHandler.executeWithRetry(() -> requestSpec.put(endpoint));
+        } catch (Exception e) {
+            logger.error("PUT request failed for endpoint: {}", endpoint, e);
+            throw new RuntimeException("PUT request failed: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -146,7 +179,12 @@ public class BaseApiClient {
      */
     public Response patch(String endpoint) {
         logger.info("Executing PATCH request to: {}", endpoint);
-        return RetryHandler.executeWithRetry(() -> requestSpec.patch(endpoint));
+        try {
+            return RetryHandler.executeWithRetry(() -> requestSpec.patch(endpoint));
+        } catch (Exception e) {
+            logger.error("PATCH request failed for endpoint: {}", endpoint, e);
+            throw new RuntimeException("PATCH request failed: " + e.getMessage(), e);
+        }
     }
 
     /**

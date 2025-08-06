@@ -1,7 +1,6 @@
 package com.api.automation.tests.connectivity;
 
-import com.api.automation.config.ConfigManager;
-import org.junit.jupiter.api.BeforeAll;
+import com.api.automation.tests.base.BaseTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,16 +10,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * Basic connectivity tests to validate framework setup
  */
-public class ConnectivityTest {
-
-    @BeforeAll
-    public static void setup() {
-        ConfigManager configManager = ConfigManager.getInstance();
-        baseURI = configManager.getProperty("base.url");
-        requestSpecification = given()
-                .contentType("application/json")
-                .header("Accept", "application/json");
-    }
+public class ConnectivityTest extends BaseTest {
 
     @Test
     @DisplayName("Test API Connectivity - Get All Users")

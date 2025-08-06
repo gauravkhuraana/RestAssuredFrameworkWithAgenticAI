@@ -213,6 +213,13 @@
                         <suite>${suite}</suite>
                     </systemPropertyVariables>
                     <argLine>-Xmx2048m -Xms512m --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</argLine>
+                    <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+                    <forkedProcessExitTimeoutInSeconds>30</forkedProcessExitTimeoutInSeconds>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <printSummary>true</printSummary>
+                    <reportFormat>xml</reportFormat>
                 </configuration>
             </plugin>
 

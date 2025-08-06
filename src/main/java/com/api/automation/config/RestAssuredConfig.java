@@ -22,8 +22,16 @@ public class RestAssuredConfig {
     public static void setup() {
         logger.info("Setting up Rest Assured configuration for environment: {}", config.getEnvironment());
         
-        // Base configuration
-        RestAssured.baseURI = config.getBaseUrl();
+        // Base configuration with null safety
+        String baseUrl = config.getBaseUrl();
+        if (baseUrl != null && !baseUrl.isEmpty()) {
+            RestAssured.baseURI = baseUrl;
+            logger.info("Set base URI to: {}", baseUrl);
+        } else {
+            logger.warn("Base URL is null or empty, using default");
+            RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+        }
+        
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         
         // Default specifications

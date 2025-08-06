@@ -26,21 +26,30 @@ public abstract class BaseTest {
     static void setUpClass() {
         logger.info("Setting up test class");
         
-        // Initialize configuration
-        config = ConfigManager.getInstance();
-        
-        // Initialize Rest Assured
-        RestAssuredConfig.setup();
-        
-        // Add filters for logging and reporting
-        RestAssured.filters(
-            new RequestLoggingFilter(),
-            new ResponseLoggingFilter(),
-            new AllureRestAssured()
-        );
-        
-        // Initialize Extent Reports
-        ExtentReportManager.initReports();
+        try {
+            // Initialize configuration
+            config = ConfigManager.getInstance();
+            logger.info("ConfigManager initialized successfully for environment: {}", config.getEnvironment());
+            
+            // Initialize Rest Assured
+            RestAssuredConfig.setup();
+            logger.info("RestAssured configuration completed");
+            
+            // Add filters for logging and reporting
+            RestAssured.filters(
+                new RequestLoggingFilter(),
+                new ResponseLoggingFilter(),
+                new AllureRestAssured()
+            );
+            
+            // Initialize Extent Reports
+            ExtentReportManager.initReports();
+            logger.info("Extent Reports initialized");
+            
+        } catch (Exception e) {
+            logger.error("Failed to set up test class", e);
+            throw new RuntimeException("Test setup failed: " + e.getMessage(), e);
+        }
         
         logger.info("Test class setup completed for environment: {}", config.getEnvironment());
     }

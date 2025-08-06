@@ -26,12 +26,21 @@ public class RetryHandler {
                 return operation.get();
             } catch (Exception e) {
                 lastException = e;
-                logger.warn("Operation failed on attempt {}/{}: {}", attempt, maxAttempts, e.getMessage());
+                
+                // Check if this is a type of exception we should not retry on
+                if (shouldNotRetry(e)) {
+                    logger.info("Exception type {} should not be retried, failing immediately", e.getClass().getSimpleName());
+                    throw e;
+                }
+                
+                logger.warn("Operation failed on attempt {}/{}: {} - {}", attempt, maxAttempts, 
+                    e.getClass().getSimpleName(), e.getMessage());
                 
                 if (attempt < maxAttempts) {
                     try {
-                        logger.debug("Waiting {}ms before retry", delayMs);
-                        Thread.sleep(delayMs);
+                        long waitTime = delayMs * attempt; // Exponential backoff
+                        logger.debug("Waiting {}ms before retry", waitTime);
+                        Thread.sleep(waitTime);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         throw new RuntimeException("Interrupted during retry delay", ie);
@@ -40,8 +49,22 @@ public class RetryHandler {
             }
         }
         
-        logger.error("Operation failed after {} attempts", maxAttempts);
+        logger.error("Operation failed after {} attempts. Last exception: {}", maxAttempts, 
+            lastException.getClass().getSimpleName() + ": " + lastException.getMessage());
         throw new RuntimeException("Operation failed after " + maxAttempts + " attempts", lastException);
+    }
+
+    /**
+     * Check if an exception should not be retried
+     */
+    private static boolean shouldNotRetry(Exception e) {
+        // Don't retry on assertion errors, illegal arguments, etc.
+        return (e instanceof RuntimeException && 
+                (e.getClass().getSimpleName().contains("AssertionError") ||
+                 e instanceof IllegalArgumentException ||
+                 e instanceof IllegalStateException ||
+                 e instanceof UnsupportedOperationException)) ||
+               (e.getMessage() != null && e.getMessage().contains("404"));
     }
 
     /**
