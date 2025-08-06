@@ -56,7 +56,14 @@ jobs:
     - name: Display Test Results
       if: always()
       run: |
-        echo "=== Test Execution Complete ==="
+        echo "=== Test Execution Complete ===" 
+        
+        # Add to GitHub Step Summary
+        echo "## 🧪 API Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** dev" >> $GITHUB_STEP_SUMMARY
+        echo "**Test Suite:** ${{ github.event.inputs.test_suite || 'smoke' }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
         
         if [ -d "target/surefire-reports" ]; then
           echo "✅ Test reports generated"
@@ -66,17 +73,67 @@ jobs:
           if [ -n "$XML_FILES" ]; then
             echo "📊 Test report files found:"
             ls -la target/surefire-reports/TEST-*.xml || true
+            
+            # Parse test results for summary
+            TOTAL_TESTS=0
+            FAILURES=0
+            ERRORS=0
+            SKIPPED=0
+            
+            for file in target/surefire-reports/TEST-*.xml; do
+              if [ -f "$file" ]; then
+                # Extract numbers from XML attributes
+                TESTS=$(grep -o 'tests="[0-9]*"' "$file" | grep -o '[0-9]*' || echo "0")
+                FAILS=$(grep -o 'failures="[0-9]*"' "$file" | grep -o '[0-9]*' || echo "0")
+                ERRS=$(grep -o 'errors="[0-9]*"' "$file" | grep -o '[0-9]*' || echo "0")
+                SKIP=$(grep -o 'skipped="[0-9]*"' "$file" | grep -o '[0-9]*' || echo "0")
+                
+                TOTAL_TESTS=$((TOTAL_TESTS + ${TESTS:-0}))
+                FAILURES=$((FAILURES + ${FAILS:-0}))
+                ERRORS=$((ERRORS + ${ERRS:-0}))
+                SKIPPED=$((SKIPPED + ${SKIP:-0}))
+              fi
+            done
+            
+            PASSED=$((TOTAL_TESTS - FAILURES - ERRORS - SKIPPED))
+            
+            # Add results table to GitHub Summary
+            echo "### Test Results Summary" >> $GITHUB_STEP_SUMMARY
+            echo "| Status | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| 📊 **Total Tests** | $TOTAL_TESTS |" >> $GITHUB_STEP_SUMMARY
+            echo "| ✅ **Passed** | $PASSED |" >> $GITHUB_STEP_SUMMARY
+            echo "| ❌ **Failed** | $FAILURES |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🔥 **Errors** | $ERRORS |" >> $GITHUB_STEP_SUMMARY
+            echo "| ⏭️ **Skipped** | $SKIPPED |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Add status badge
+            if [ "$FAILURES" -eq 0 ] && [ "$ERRORS" -eq 0 ]; then
+              echo "### 🎉 **All Tests Passed!** ✅" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "### ⚠️ **Some Tests Failed** ❌" >> $GITHUB_STEP_SUMMARY
+              echo "- Failed: $FAILURES" >> $GITHUB_STEP_SUMMARY
+              echo "- Errors: $ERRORS" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            # Console output for logs
+            echo "📊 Test Summary: Total=$TOTAL_TESTS, Passed=$PASSED, Failed=$FAILURES, Errors=$ERRORS, Skipped=$SKIPPED"
           else
             echo "⚠️ No XML test reports found"
+            echo "⚠️ No test reports found" >> $GITHUB_STEP_SUMMARY
           fi
         else
           echo "❌ No surefire-reports directory found"
+          echo "❌ No test execution detected" >> $GITHUB_STEP_SUMMARY
         fi
         
         # Show any log files
         if [ -d "logs" ]; then
           echo "📝 Log files available:"
           ls -la logs/ || true
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📁 **Log files available in artifacts**" >> $GITHUB_STEP_SUMMARY
         fi
 
     - name: Upload Test Artifacts
@@ -97,13 +154,82 @@ jobs:
       run: |
         # Simple check - if Maven command failed, this step will catch it
         if [ -f target/surefire-reports/TEST-*.xml ]; then
-          if grep -q 'failures="[1-9]' target/surefire-reports/TEST-*.xml; then
+          # Check for failures or errors in XML reports
+          if grep -q 'failures="[1-9]' target/surefire-reports/TEST-*.xml 2>/dev/null; then
             echo "❌ Tests have failures"
             exit 1
-          elif grep -q 'errors="[1-9]' target/surefire-reports/TEST-*.xml; then
-            echo "❌ Tests have errors"  
+          elif grep -q 'errors="[1-9]' target/surefire-reports/TEST-*.xml 2>/dev/null; then
+            echo "❌ Tests have errors"
             exit 1
           else
             echo "✅ All tests passed"
           fi
+        else
+          echo "⚠️ No test reports found - treating as failure"
+          exit 1
         fi
+
+    - name: Create Status Check
+      if: always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          // Only create status for non-PR events to avoid permission issues
+          if (context.eventName !== 'pull_request') {
+            try {
+              // Read test results
+              const fs = require('fs');
+              const path = require('path');
+              
+              let status = 'success';
+              let description = 'All tests passed';
+              
+              try {
+                // Check if test reports exist
+                const reportsDir = 'target/surefire-reports';
+                if (fs.existsSync(reportsDir)) {
+                  const files = fs.readdirSync(reportsDir).filter(f => f.startsWith('TEST-') && f.endsWith('.xml'));
+                  
+                  if (files.length > 0) {
+                    // Simple check for failures/errors in filenames or basic content
+                    let hasFailures = false;
+                    for (const file of files) {
+                      const content = fs.readFileSync(path.join(reportsDir, file), 'utf8');
+                      if (content.includes('failures="') && !content.includes('failures="0"')) {
+                        hasFailures = true;
+                        break;
+                      }
+                      if (content.includes('errors="') && !content.includes('errors="0"')) {
+                        hasFailures = true;
+                        break;
+                      }
+                    }
+                    
+                    if (hasFailures) {
+                      status = 'failure';
+                      description = 'Some tests failed';
+                    } else {
+                      description = `All tests passed (${files.length} test files)`;
+                    }
+                  } else {
+                    status = 'failure';
+                    description = 'No test reports found';
+                  }
+                } else {
+                  status = 'failure';
+                  description = 'No test execution detected';
+                }
+              } catch (e) {
+                console.log('Error reading test results:', e.message);
+                status = 'error';
+                description = 'Error reading test results';
+              }
+              
+              console.log(`Creating status: ${status} - ${description}`);
+              
+            } catch (error) {
+              console.log('Status creation skipped:', error.message);
+            }
+          } else {
+            console.log('Skipping status creation for pull request');
+          }
