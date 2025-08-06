@@ -1,0 +1,119 @@
+# Simple CI/CD Pipeline without external test reporter
+name: API Test Automation (Simple)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  MAVEN_OPTS: -Xmx2048m -Xms512m
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    strategy:
+      matrix:
+        java-version: [17]
+        test-suite: [smoke, regression]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run ${{ matrix.test-suite }} Tests
+      run: |
+        mvn clean test \
+          -Denv=dev \
+          -P${{ matrix.test-suite }} \
+          --batch-mode \
+          --no-transfer-progress
+
+    - name: Parse Test Results
+      if: always()
+      run: |
+        echo "## 🧪 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** dev" >> $GITHUB_STEP_SUMMARY
+        echo "**Test Suite:** ${{ matrix.test-suite }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Java Version:** ${{ matrix.java-version }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Parse surefire reports if they exist
+        if ls target/surefire-reports/TEST-*.xml 1> /dev/null 2>&1; then
+          echo "**Test Report Files Generated:**" >> $GITHUB_STEP_SUMMARY
+          
+          # Count tests from XML files
+          TOTAL_TESTS=$(grep -h 'testsuite.*tests=' target/surefire-reports/TEST-*.xml | sed 's/.*tests="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          FAILURES=$(grep -h 'testsuite.*failures=' target/surefire-reports/TEST-*.xml | sed 's/.*failures="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          ERRORS=$(grep -h 'testsuite.*errors=' target/surefire-reports/TEST-*.xml | sed 's/.*errors="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          SKIPPED=$(grep -h 'testsuite.*skipped=' target/surefire-reports/TEST-*.xml | sed 's/.*skipped="\([0-9]*\)".*/\1/' | awk '{sum += $1} END {print sum}')
+          
+          # Calculate passed tests
+          PASSED=$((TOTAL_TESTS - FAILURES - ERRORS - SKIPPED))
+          
+          echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 **Total Tests** | ${TOTAL_TESTS:-0} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ✅ **Passed** | ${PASSED:-0} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ❌ **Failed** | ${FAILURES:-0} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔥 **Errors** | ${ERRORS:-0} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⏭️ **Skipped** | ${SKIPPED:-0} |" >> $GITHUB_STEP_SUMMARY
+          
+          # Add status emoji
+          if [ "${FAILURES:-0}" -eq 0 ] && [ "${ERRORS:-0}" -eq 0 ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 🎉 All tests passed!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ⚠️ Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "⚠️ No test report files found in target/surefire-reports/" >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.test-suite }}-java-${{ matrix.java-version }}
+        path: |
+          target/surefire-reports/
+          target/allure-results/
+          test-output/
+          logs/
+        retention-days: 7
+
+  # Summary job
+  summary:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Final Summary
+      run: |
+        echo "## 🏁 CI/CD Pipeline Complete" >> $GITHUB_STEP_SUMMARY
+        echo "Check individual job results above for detailed test information." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Artifacts uploaded:**" >> $GITHUB_STEP_SUMMARY
+        echo "- Test results (XML)" >> $GITHUB_STEP_SUMMARY
+        echo "- Allure reports" >> $GITHUB_STEP_SUMMARY
+        echo "- Extent reports" >> $GITHUB_STEP_SUMMARY
+        echo "- Log files" >> $GITHUB_STEP_SUMMARY

@@ -211,8 +211,11 @@
                     <systemPropertyVariables>
                         <env>${env}</env>
                         <suite>${suite}</suite>
+                        <groovy.indy>false</groovy.indy>
+                        <groovy.target.indy>false</groovy.target.indy>
+                        <groovy.antlr4>false</groovy.antlr4>
                     </systemPropertyVariables>
-                    <argLine>-Xmx2048m -Xms512m --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</argLine>
+                    <argLine>-Xmx2048m -Xms512m --add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED -Dgroovy.indy=false -Dgroovy.target.indy=false -Dgroovy.antlr4=false</argLine>
                     <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
                     <forkedProcessExitTimeoutInSeconds>30</forkedProcessExitTimeoutInSeconds>
                     <forkCount>1</forkCount>
@@ -237,6 +240,9 @@
                     <systemPropertyVariables>
                         <env>${env}</env>
                         <suite>${suite}</suite>
+                        <groovy.indy>false</groovy.indy>
+                        <groovy.target.indy>false</groovy.target.indy>
+                        <groovy.antlr4>false</groovy.antlr4>
                     </systemPropertyVariables>
                 </configuration>
                 <executions>

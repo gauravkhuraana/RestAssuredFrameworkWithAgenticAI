@@ -2,9 +2,11 @@ package com.api.automation.client;
 
 import com.api.automation.auth.AuthHandler;
 import com.api.automation.config.ConfigManager;
+import com.api.automation.config.RestAssuredConfig;
 import com.api.automation.retry.RetryHandler;
 import com.api.automation.utils.JsonUtils;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -14,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * Base API client with common HTTP operations
+ * Thread-Safe Base API client with common HTTP operations
  */
 public class BaseApiClient {
     protected static final Logger logger = LoggerFactory.getLogger(BaseApiClient.class);
@@ -33,19 +35,47 @@ public class BaseApiClient {
     protected RequestSpecification requestSpec;
 
     public BaseApiClient() {
-        this.requestSpec = RestAssured.given();
-        // Ensure base configuration is applied
+        // Create a completely new request specification without static RestAssured
+        RequestSpecification baseSpec = RestAssuredConfig.getDefaultRequestSpec();
+        
+        // Set base URI directly in the specification
         if (config != null) {
             String baseUrl = config.getBaseUrl();
-            if (baseUrl != null && !baseUrl.equals(RestAssured.baseURI)) {
+            if (baseUrl != null && !baseUrl.isEmpty()) {
+                this.requestSpec = new RequestSpecBuilder()
+                    .addRequestSpecification(baseSpec)
+                    .setBaseUri(baseUrl)
+                    .build();
                 logger.debug("Setting base URI for request: {}", baseUrl);
-                this.requestSpec.baseUri(baseUrl);
+            } else {
+                this.requestSpec = baseSpec;
             }
+        } else {
+            this.requestSpec = baseSpec;
         }
     }
 
     public BaseApiClient(RequestSpecification requestSpec) {
         this.requestSpec = requestSpec;
+    }
+
+    /**
+     * Create an authenticated API client
+     */
+    public static BaseApiClient withAuthentication() {
+        RequestSpecification authSpec = RestAssuredConfig.getAuthenticatedRequestSpec();
+        
+        if (config != null) {
+            String baseUrl = config.getBaseUrl();
+            if (baseUrl != null && !baseUrl.isEmpty()) {
+                authSpec = new RequestSpecBuilder()
+                    .addRequestSpecification(authSpec)
+                    .setBaseUri(baseUrl)
+                    .build();
+            }
+        }
+        
+        return new BaseApiClient(authSpec);
     }
 
     /**
@@ -141,7 +171,12 @@ public class BaseApiClient {
     public Response get(String endpoint) {
         logger.info("Executing GET request to: {}", endpoint);
         try {
-            return RetryHandler.executeWithRetry(() -> requestSpec.get(endpoint));
+            return RetryHandler.executeWithRetry(() -> 
+                RestAssured.given()
+                    .spec(requestSpec)
+                    .when()
+                    .get(endpoint)
+            );
         } catch (Exception e) {
             logger.error("GET request failed for endpoint: {}", endpoint, e);
             throw new RuntimeException("GET request failed: " + e.getMessage(), e);
@@ -154,7 +189,12 @@ public class BaseApiClient {
     public Response post(String endpoint) {
         logger.info("Executing POST request to: {}", endpoint);
         try {
-            return RetryHandler.executeWithRetry(() -> requestSpec.post(endpoint));
+            return RetryHandler.executeWithRetry(() -> 
+                RestAssured.given()
+                    .spec(requestSpec)
+                    .when()
+                    .post(endpoint)
+            );
         } catch (Exception e) {
             logger.error("POST request failed for endpoint: {}", endpoint, e);
             throw new RuntimeException("POST request failed: " + e.getMessage(), e);
@@ -167,7 +207,12 @@ public class BaseApiClient {
     public Response put(String endpoint) {
         logger.info("Executing PUT request to: {}", endpoint);
         try {
-            return RetryHandler.executeWithRetry(() -> requestSpec.put(endpoint));
+            return RetryHandler.executeWithRetry(() -> 
+                RestAssured.given()
+                    .spec(requestSpec)
+                    .when()
+                    .put(endpoint)
+            );
         } catch (Exception e) {
             logger.error("PUT request failed for endpoint: {}", endpoint, e);
             throw new RuntimeException("PUT request failed: " + e.getMessage(), e);
@@ -180,7 +225,12 @@ public class BaseApiClient {
     public Response patch(String endpoint) {
         logger.info("Executing PATCH request to: {}", endpoint);
         try {
-            return RetryHandler.executeWithRetry(() -> requestSpec.patch(endpoint));
+            return RetryHandler.executeWithRetry(() -> 
+                RestAssured.given()
+                    .spec(requestSpec)
+                    .when()
+                    .patch(endpoint)
+            );
         } catch (Exception e) {
             logger.error("PATCH request failed for endpoint: {}", endpoint, e);
             throw new RuntimeException("PATCH request failed: " + e.getMessage(), e);
@@ -192,7 +242,12 @@ public class BaseApiClient {
      */
     public Response delete(String endpoint) {
         logger.info("Executing DELETE request to: {}", endpoint);
-        return RetryHandler.executeWithRetry(() -> requestSpec.delete(endpoint));
+        return RetryHandler.executeWithRetry(() -> 
+            RestAssured.given()
+                .spec(requestSpec)
+                .when()
+                .delete(endpoint)
+        );
     }
 
     /**
@@ -200,7 +255,12 @@ public class BaseApiClient {
      */
     public Response head(String endpoint) {
         logger.info("Executing HEAD request to: {}", endpoint);
-        return RetryHandler.executeWithRetry(() -> requestSpec.head(endpoint));
+        return RetryHandler.executeWithRetry(() -> 
+            RestAssured.given()
+                .spec(requestSpec)
+                .when()
+                .head(endpoint)
+        );
     }
 
     /**
@@ -222,7 +282,21 @@ public class BaseApiClient {
      * Reset the request specification
      */
     public BaseApiClient reset() {
-        this.requestSpec = RestAssured.given();
+        RequestSpecification baseSpec = RestAssuredConfig.getDefaultRequestSpec();
+        
+        if (config != null) {
+            String baseUrl = config.getBaseUrl();
+            if (baseUrl != null && !baseUrl.isEmpty()) {
+                this.requestSpec = new RequestSpecBuilder()
+                    .addRequestSpecification(baseSpec)
+                    .setBaseUri(baseUrl)
+                    .build();
+            } else {
+                this.requestSpec = baseSpec;
+            }
+        } else {
+            this.requestSpec = baseSpec;
+        }
         return this;
     }
 

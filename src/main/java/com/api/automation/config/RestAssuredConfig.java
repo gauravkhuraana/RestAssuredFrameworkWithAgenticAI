@@ -13,32 +13,40 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Rest Assured Configuration Setup
+ * Thread-Safe Rest Assured Configuration Setup
  */
 public class RestAssuredConfig {
     private static final Logger logger = LoggerFactory.getLogger(RestAssuredConfig.class);
     private static final ConfigManager config = ConfigManager.getInstance();
+    private static volatile boolean isInitialized = false;
+    private static final Object lock = new Object();
 
     public static void setup() {
-        logger.info("Setting up Rest Assured configuration for environment: {}", config.getEnvironment());
-        
-        // Base configuration with null safety
-        String baseUrl = config.getBaseUrl();
-        if (baseUrl != null && !baseUrl.isEmpty()) {
-            RestAssured.baseURI = baseUrl;
-            logger.info("Set base URI to: {}", baseUrl);
-        } else {
-            logger.warn("Base URL is null or empty, using default");
-            RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+        if (!isInitialized) {
+            synchronized (lock) {
+                if (!isInitialized) {
+                    logger.info("Setting up Rest Assured configuration for environment: {}", config.getEnvironment());
+                    
+                    // Base configuration with null safety
+                    String baseUrl = config.getBaseUrl();
+                    if (baseUrl != null && !baseUrl.isEmpty()) {
+                        RestAssured.baseURI = baseUrl;
+                        logger.info("Set base URI to: {}", baseUrl);
+                    } else {
+                        logger.warn("Base URL is null or empty, using default");
+                        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+                    }
+                    
+                    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+                    
+                    // Don't set static specifications to avoid thread conflicts
+                    // Each test will create its own specifications
+                    
+                    isInitialized = true;
+                    logger.info("Rest Assured configuration completed");
+                }
+            }
         }
-        
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        
-        // Default specifications
-        RestAssured.requestSpecification = getDefaultRequestSpec();
-        RestAssured.responseSpecification = getDefaultResponseSpec();
-        
-        logger.info("Rest Assured configuration completed");
     }
 
     public static RequestSpecification getDefaultRequestSpec() {
@@ -76,7 +84,10 @@ public class RestAssuredConfig {
                 String username = config.getAuthUsername();
                 String password = config.getAuthPassword();
                 if (username != null && password != null) {
-                    builder.setAuth(RestAssured.basic(username, password));
+                    // Create basic auth header manually to avoid static RestAssured
+                    String credentials = java.util.Base64.getEncoder()
+                        .encodeToString((username + ":" + password).getBytes());
+                    builder.addHeader("Authorization", "Basic " + credentials);
                 }
                 break;
                 
@@ -95,7 +106,10 @@ public class RestAssuredConfig {
     }
 
     public static void reset() {
-        RestAssured.reset();
-        logger.info("Rest Assured configuration reset");
+        synchronized (lock) {
+            RestAssured.reset();
+            isInitialized = false;
+            logger.info("Rest Assured configuration reset");
+        }
     }
 }
