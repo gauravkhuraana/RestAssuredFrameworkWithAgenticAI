@@ -1,0 +1,26 @@
+# Dependabot configuration for security updates
+version: 2
+updates:
+  # Monitor Maven dependencies for security vulnerabilities
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "gauravkhuraana"
+    labels:
+      - "dependencies"
+      - "security"
+    # Only update for security fixes, not feature updates
+    allow:
+      - dependency-type: "direct"
+        update-type: "security"
+      - dependency-type: "indirect"
+        update-type: "security"
+    # Ignore major version updates to avoid breaking changes
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
