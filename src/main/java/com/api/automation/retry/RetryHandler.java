@@ -18,23 +18,35 @@ public class RetryHandler {
      * Execute operation with retry logic
      */
     public static <T> T executeWithRetry(Supplier<T> operation, int maxAttempts, long delayMs) {
+        if (operation == null) {
+            throw new IllegalArgumentException("Operation cannot be null");
+        }
+        
         Exception lastException = null;
         
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
                 logger.debug("Executing operation, attempt {}/{}", attempt, maxAttempts);
-                return operation.get();
+                T result = operation.get();
+                if (attempt > 1) {
+                    logger.info("Operation succeeded on attempt {}/{}", attempt, maxAttempts);
+                }
+                return result;
             } catch (Exception e) {
                 lastException = e;
                 
+                // Enhanced null safety for exception handling
+                String exceptionType = e != null ? e.getClass().getSimpleName() : "Unknown";
+                String exceptionMessage = e != null ? e.getMessage() : "No message available";
+                
                 // Check if this is a type of exception we should not retry on
                 if (shouldNotRetry(e)) {
-                    logger.info("Exception type {} should not be retried, failing immediately", e.getClass().getSimpleName());
+                    logger.info("Exception type {} should not be retried, failing immediately", exceptionType);
                     throw e;
                 }
                 
                 logger.warn("Operation failed on attempt {}/{}: {} - {}", attempt, maxAttempts, 
-                    e.getClass().getSimpleName(), e.getMessage());
+                    exceptionType, exceptionMessage);
                 
                 if (attempt < maxAttempts) {
                     try {
@@ -49,8 +61,15 @@ public class RetryHandler {
             }
         }
         
-        logger.error("Operation failed after {} attempts. Last exception: {}", maxAttempts, 
-            lastException.getClass().getSimpleName() + ": " + lastException.getMessage());
+        // Enhanced error reporting with null safety
+        String lastExceptionInfo = "Unknown error";
+        if (lastException != null) {
+            String exceptionType = lastException.getClass().getSimpleName();
+            String message = lastException.getMessage() != null ? lastException.getMessage() : "No message";
+            lastExceptionInfo = exceptionType + ": " + message;
+        }
+        
+        logger.error("Operation failed after {} attempts. Last exception: {}", maxAttempts, lastExceptionInfo);
         throw new RuntimeException("Operation failed after " + maxAttempts + " attempts", lastException);
     }
 

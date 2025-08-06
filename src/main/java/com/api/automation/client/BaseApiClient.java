@@ -35,23 +35,30 @@ public class BaseApiClient {
     protected RequestSpecification requestSpec;
 
     public BaseApiClient() {
-        // Create a completely new request specification without static RestAssured
-        RequestSpecification baseSpec = RestAssuredConfig.getDefaultRequestSpec();
-        
-        // Set base URI directly in the specification
-        if (config != null) {
-            String baseUrl = config.getBaseUrl();
-            if (baseUrl != null && !baseUrl.isEmpty()) {
-                this.requestSpec = new RequestSpecBuilder()
-                    .addRequestSpecification(baseSpec)
-                    .setBaseUri(baseUrl)
-                    .build();
-                logger.debug("Setting base URI for request: {}", baseUrl);
+        try {
+            // Create a completely new request specification without static RestAssured
+            RequestSpecification baseSpec = RestAssuredConfig.getDefaultRequestSpec();
+            
+            // Set base URI directly in the specification
+            if (config != null) {
+                String baseUrl = config.getBaseUrl();
+                if (baseUrl != null && !baseUrl.isEmpty()) {
+                    this.requestSpec = new RequestSpecBuilder()
+                        .addRequestSpecification(baseSpec)
+                        .setBaseUri(baseUrl)
+                        .build();
+                    logger.debug("BaseApiClient initialized with base URI: {}", baseUrl);
+                } else {
+                    logger.warn("Base URL is null or empty, using default specification");
+                    this.requestSpec = baseSpec;
+                }
             } else {
+                logger.error("ConfigManager is null, using default specification");
                 this.requestSpec = baseSpec;
             }
-        } else {
-            this.requestSpec = baseSpec;
+        } catch (Exception e) {
+            logger.error("Error initializing BaseApiClient: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to initialize BaseApiClient", e);
         }
     }
 
@@ -169,17 +176,33 @@ public class BaseApiClient {
      * Execute GET request
      */
     public Response get(String endpoint) {
+        if (endpoint == null) {
+            throw new IllegalArgumentException("Endpoint cannot be null");
+        }
+        
         logger.info("Executing GET request to: {}", endpoint);
+        
+        // Validate that requestSpec is properly initialized
+        if (requestSpec == null) {
+            logger.error("Request specification is null - configuration may not be properly initialized");
+            throw new RuntimeException("Request specification is null - BaseApiClient not properly initialized");
+        }
+        
         try {
-            return RetryHandler.executeWithRetry(() -> 
-                RestAssured.given()
-                    .spec(requestSpec)
-                    .when()
-                    .get(endpoint)
-            );
+            return RetryHandler.executeWithRetry(() -> {
+                try {
+                    return RestAssured.given()
+                        .spec(requestSpec)
+                        .when()
+                        .get(endpoint);
+                } catch (Exception e) {
+                    logger.debug("Exception during GET request execution: {}", e.getMessage());
+                    throw e;
+                }
+            });
         } catch (Exception e) {
-            logger.error("GET request failed for endpoint: {}", endpoint, e);
-            throw new RuntimeException("GET request failed: " + e.getMessage(), e);
+            logger.error("GET request failed for endpoint: {} - Error: {}", endpoint, e.getMessage(), e);
+            throw new RuntimeException("GET request failed for endpoint: " + endpoint + " - " + e.getMessage(), e);
         }
     }
 
