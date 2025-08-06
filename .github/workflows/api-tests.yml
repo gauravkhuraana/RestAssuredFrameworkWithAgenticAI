@@ -62,30 +62,33 @@ jobs:
     
     - name: Run smoke tests
       if: env.SUITE == 'smoke'
-      run: mvn clean test -Denv=${{ env.ENV }} -Psmoke
+      run: mvn clean test -Denv=${{ env.ENV }} -Psmoke,ci -Dmaven.test.failure.ignore=false
       env:
         API_TOKEN: ${{ secrets.API_TOKEN }}
         API_USERNAME: ${{ secrets.API_USERNAME }}
         API_PASSWORD: ${{ secrets.API_PASSWORD }}
         API_KEY: ${{ secrets.API_KEY }}
+        MAVEN_OPTS: "-Xmx2048m -Xms512m"
     
     - name: Run regression tests
       if: env.SUITE == 'regression'
-      run: mvn clean test -Denv=${{ env.ENV }} -Pregression
+      run: mvn clean test -Denv=${{ env.ENV }} -Pregression,ci -Dmaven.test.failure.ignore=false
       env:
         API_TOKEN: ${{ secrets.API_TOKEN }}
         API_USERNAME: ${{ secrets.API_USERNAME }}
         API_PASSWORD: ${{ secrets.API_PASSWORD }}
         API_KEY: ${{ secrets.API_KEY }}
+        MAVEN_OPTS: "-Xmx2048m -Xms512m"
     
     - name: Run all tests
       if: env.SUITE == 'all'
-      run: mvn clean test -Denv=${{ env.ENV }}
+      run: mvn clean test -Denv=${{ env.ENV }} -Pci -Dmaven.test.failure.ignore=false
       env:
         API_TOKEN: ${{ secrets.API_TOKEN }}
         API_USERNAME: ${{ secrets.API_USERNAME }}
         API_PASSWORD: ${{ secrets.API_PASSWORD }}
         API_KEY: ${{ secrets.API_KEY }}
+        MAVEN_OPTS: "-Xmx2048m -Xms512m"
     
     - name: Generate Allure Report
       if: always()

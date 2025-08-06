@@ -27,6 +27,16 @@ public class RestAssuredConfig {
                 if (!isInitialized) {
                     logger.info("Setting up Rest Assured configuration for environment: {}", config.getEnvironment());
                     
+                    // CI Environment specific configuration
+                    if (isRunningInCI()) {
+                        logger.info("Detected CI environment, applying CI-specific RestAssured configurations");
+                        System.setProperty("groovy.indy", "false");
+                        System.setProperty("groovy.target.indy", "false");
+                        System.setProperty("groovy.antlr4", "false");
+                        System.setProperty("restassured.config.redirect.followRedirects", "true");
+                        System.setProperty("restassured.config.connection.closeIdleConnectionsAfterEachResponse", "true");
+                    }
+                    
                     // Base configuration with null safety
                     String baseUrl = config.getBaseUrl();
                     if (baseUrl != null && !baseUrl.isEmpty()) {
@@ -111,5 +121,18 @@ public class RestAssuredConfig {
             isInitialized = false;
             logger.info("Rest Assured configuration reset");
         }
+    }
+    
+    /**
+     * Check if running in CI environment
+     */
+    private static boolean isRunningInCI() {
+        String ci = System.getenv("CI");
+        String githubActions = System.getenv("GITHUB_ACTIONS");
+        String azureDevops = System.getenv("SYSTEM_TEAMPROJECT");
+        
+        return "true".equalsIgnoreCase(ci) || 
+               "true".equalsIgnoreCase(githubActions) || 
+               azureDevops != null;
     }
 }
