@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Test User 1",
+    "username": "testuser1",
+    "email": "testuser1@example.com",
+    "phone": "1-555-123-4567",
+    "website": "testuser1.com",
+    "address": {
+      "street": "123 Test Street",
+      "suite": "Apt 1",
+      "city": "Test City",
+      "zipcode": "12345",
+      "geo": {
+        "lat": "40.7128",
+        "lng": "-74.0060"
+      }
+    },
+    "company": {
+      "name": "Test Company 1",
+      "catchPhrase": "Testing is our passion",
+      "bs": "deliver quality solutions"
+    }
+  },
+  {
+    "name": "Test User 2",
+    "username": "testuser2",
+    "email": "testuser2@example.com",
+    "phone": "1-555-234-5678",
+    "website": "testuser2.com",
+    "address": {
+      "street": "456 Test Avenue",
+      "suite": "Suite 2",
+      "city": "Test Town",
+      "zipcode": "23456",
+      "geo": {
+        "lat": "34.0522",
+        "lng": "-118.2437"
+      }
+    },
+    "company": {
+      "name": "Test Company 2",
+      "catchPhrase": "Innovation through testing",
+      "bs": "provide reliable services"
+    }
+  }
+]

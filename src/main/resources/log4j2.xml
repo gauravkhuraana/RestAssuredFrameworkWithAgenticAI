@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="LOG_LEVEL">${sys:log.level:-INFO}</Property>
+    </Properties>
+    
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        
+        <!-- File Appender -->
+        <RollingFile name="FileAppender" fileName="logs/api-tests.log"
+                     filePattern="logs/api-tests-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        
+        <!-- Request/Response Logger -->
+        <RollingFile name="RequestResponseAppender" fileName="logs/request-response.log"
+                     filePattern="logs/request-response-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+    </Appenders>
+    
+    <Loggers>
+        <!-- Rest Assured Request/Response Logging -->
+        <Logger name="io.restassured" level="DEBUG" additivity="false">
+            <AppenderRef ref="RequestResponseAppender"/>
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        
+        <!-- Framework Loggers -->
+        <Logger name="com.api.automation" level="${LOG_LEVEL}" additivity="false">
+            <AppenderRef ref="FileAppender"/>
+            <AppenderRef ref="ConsoleAppender"/>
+        </Logger>
+        
+        <!-- Third-party libraries -->
+        <Logger name="org.apache.http" level="WARN"/>
+        <Logger name="org.apache.commons" level="WARN"/>
+        
+        <!-- Root Logger -->
+        <Root level="${LOG_LEVEL}">
+            <AppenderRef ref="FileAppender"/>
+            <AppenderRef ref="ConsoleAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

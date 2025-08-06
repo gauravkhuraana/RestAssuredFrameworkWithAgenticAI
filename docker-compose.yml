@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # API Test Framework
+  api-tests:
+    build: .
+    container_name: api-automation-tests
+    environment:
+      - env=dev
+      - API_TOKEN=${API_TOKEN}
+      - API_USERNAME=${API_USERNAME}
+      - API_PASSWORD=${API_PASSWORD}
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./test-output:/app/test-output
+      - ./logs:/app/logs
+      - ./allure-results:/app/allure-results
+    networks:
+      - api-test-network
+    command: mvn clean test -Denv=dev -Psmoke
+
+  # Optional: JSON Server for local testing
+  json-server:
+    image: clue/json-server
+    container_name: json-test-server
+    ports:
+      - "3000:80"
+    volumes:
+      - ./test-data/mock-data.json:/data/db.json
+    networks:
+      - api-test-network
+
+  # Optional: Allure Report Server
+  allure-report:
+    image: frankescobar/allure-docker-service
+    container_name: allure-reports
+    ports:
+      - "5050:5050"
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 3
+      KEEP_HISTORY: 1
+    volumes:
+      - ./allure-results:/app/allure-results
+      - ./allure-reports:/app/default-reports
+    networks:
+      - api-test-network
+
+networks:
+  api-test-network:
+    driver: bridge
+
+volumes:
+  test-output:
+  logs:
+  allure-results:

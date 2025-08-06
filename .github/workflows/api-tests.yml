@@ -1,0 +1,171 @@
+name: API Automation Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - qa
+        - prod
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+        - smoke
+        - regression
+        - all
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        java-version: [17]
+        environment: [dev, qa]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+    
+    - name: Cache Maven dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+    
+    - name: Set environment variables
+      run: |
+        echo "ENV=${{ github.event.inputs.environment || matrix.environment }}" >> $GITHUB_ENV
+        echo "SUITE=${{ github.event.inputs.test_suite || 'smoke' }}" >> $GITHUB_ENV
+    
+    - name: Run smoke tests
+      if: env.SUITE == 'smoke'
+      run: mvn clean test -Denv=${{ env.ENV }} -Psmoke
+      env:
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        API_USERNAME: ${{ secrets.API_USERNAME }}
+        API_PASSWORD: ${{ secrets.API_PASSWORD }}
+        API_KEY: ${{ secrets.API_KEY }}
+    
+    - name: Run regression tests
+      if: env.SUITE == 'regression'
+      run: mvn clean test -Denv=${{ env.ENV }} -Pregression
+      env:
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        API_USERNAME: ${{ secrets.API_USERNAME }}
+        API_PASSWORD: ${{ secrets.API_PASSWORD }}
+        API_KEY: ${{ secrets.API_KEY }}
+    
+    - name: Run all tests
+      if: env.SUITE == 'all'
+      run: mvn clean test -Denv=${{ env.ENV }}
+      env:
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        API_USERNAME: ${{ secrets.API_USERNAME }}
+        API_PASSWORD: ${{ secrets.API_PASSWORD }}
+        API_KEY: ${{ secrets.API_KEY }}
+    
+    - name: Generate Allure Report
+      if: always()
+      run: mvn allure:report
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.environment }}-${{ matrix.java-version }}
+        path: |
+          target/surefire-reports/
+          target/allure-results/
+          test-output/
+          logs/
+    
+    - name: Upload Extent Reports
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: extent-reports-${{ matrix.environment }}-${{ matrix.java-version }}
+        path: test-output/extent-reports/
+    
+    - name: Upload Allure Results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: allure-results-${{ matrix.environment }}-${{ matrix.java-version }}
+        path: target/allure-results/
+    
+    - name: Publish test results
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Maven Tests (${{ matrix.environment }})
+        path: target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: true
+    
+    - name: Comment PR with test results
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Read test results and create comment
+          let comment = `## API Test Results for ${{ matrix.environment }}\n\n`;
+          comment += `- Environment: ${{ matrix.environment }}\n`;
+          comment += `- Java Version: ${{ matrix.java-version }}\n`;
+          comment += `- Test Suite: ${{ env.SUITE }}\n\n`;
+          
+          // Add link to detailed reports
+          comment += `📊 [View detailed test reports in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  # Security scan job
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'

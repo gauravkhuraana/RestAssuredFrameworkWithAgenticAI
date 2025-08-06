@@ -1,0 +1,190 @@
+# Azure DevOps Pipeline for API Automation Tests
+trigger:
+  branches:
+    include:
+    - main
+    - develop
+  paths:
+    include:
+    - src/*
+    - pom.xml
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - src/*
+    - pom.xml
+
+schedules:
+- cron: "0 2 * * *"
+  displayName: Daily API Tests
+  branches:
+    include:
+    - main
+
+variables:
+  - group: api-test-secrets
+  - name: MAVEN_CACHE_FOLDER
+    value: $(Pipeline.Workspace)/.m2/repository
+  - name: MAVEN_OPTS
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
+stages:
+- stage: 'API_Tests'
+  displayName: 'API Automation Tests'
+  jobs:
+  - job: 'RunTests'
+    displayName: 'Run API Tests'
+    strategy:
+      matrix:
+        Dev_Environment:
+          environment: 'dev'
+          testSuite: 'smoke'
+        QA_Environment:
+          environment: 'qa'
+          testSuite: 'regression'
+    
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+    - task: JavaToolInstaller@0
+      displayName: 'Install Java 17'
+      inputs:
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+    
+    - task: Cache@2
+      displayName: 'Cache Maven dependencies'
+      inputs:
+        key: 'maven | "$(Agent.OS)" | pom.xml'
+        restoreKeys: |
+          maven | "$(Agent.OS)"
+          maven
+        path: $(MAVEN_CACHE_FOLDER)
+    
+    - task: Maven@3
+      displayName: 'Maven Clean'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean'
+        options: '$(MAVEN_OPTS)'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+    
+    - task: Maven@3
+      displayName: 'Run Smoke Tests'
+      condition: eq(variables['testSuite'], 'smoke')
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'test'
+        options: '-Denv=$(environment) -Psmoke $(MAVEN_OPTS)'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+      env:
+        API_TOKEN: $(API_TOKEN)
+        API_USERNAME: $(API_USERNAME)
+        API_PASSWORD: $(API_PASSWORD)
+        API_KEY: $(API_KEY)
+    
+    - task: Maven@3
+      displayName: 'Run Regression Tests'
+      condition: eq(variables['testSuite'], 'regression')
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'test'
+        options: '-Denv=$(environment) -Pregression $(MAVEN_OPTS)'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+      env:
+        API_TOKEN: $(API_TOKEN)
+        API_USERNAME: $(API_USERNAME)
+        API_PASSWORD: $(API_PASSWORD)
+        API_KEY: $(API_KEY)
+    
+    - task: Maven@3
+      displayName: 'Generate Allure Report'
+      condition: always()
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'allure:report'
+        options: '$(MAVEN_OPTS)'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.17'
+    
+    - task: PublishTestResults@2
+      displayName: 'Publish JUnit Test Results'
+      condition: always()
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/surefire-reports/*.xml'
+        testRunTitle: 'API Tests - $(environment)'
+        mergeTestResults: true
+        failTaskOnFailedTests: true
+    
+    - task: PublishHtmlReport@1
+      displayName: 'Publish Extent Report'
+      condition: always()
+      inputs:
+        reportDir: 'test-output/extent-reports'
+        tabName: 'Extent Report - $(environment)'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Test Reports'
+      condition: always()
+      inputs:
+        pathToPublish: 'test-output'
+        artifactName: 'test-reports-$(environment)'
+        publishLocation: 'Container'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Allure Results'
+      condition: always()
+      inputs:
+        pathToPublish: 'target/allure-results'
+        artifactName: 'allure-results-$(environment)'
+        publishLocation: 'Container'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Logs'
+      condition: always()
+      inputs:
+        pathToPublish: 'logs'
+        artifactName: 'test-logs-$(environment)'
+        publishLocation: 'Container'
+
+- stage: 'Docker_Tests'
+  displayName: 'Docker Container Tests'
+  dependsOn: []
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  jobs:
+  - job: 'DockerTests'
+    displayName: 'Run Tests in Docker'
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+    - task: Docker@2
+      displayName: 'Build Docker Image'
+      inputs:
+        command: 'build'
+        Dockerfile: 'Dockerfile'
+        tags: 'api-automation-tests:latest'
+    
+    - task: Docker@2
+      displayName: 'Run Tests in Container'
+      inputs:
+        command: 'run'
+        arguments: '--rm -v $(Build.SourcesDirectory)/test-output:/app/test-output -e env=dev -e API_TOKEN=$(API_TOKEN) api-automation-tests:latest mvn clean test -Denv=dev -Psmoke'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Docker Test Results'
+      condition: always()
+      inputs:
+        pathToPublish: 'test-output'
+        artifactName: 'docker-test-reports'
+        publishLocation: 'Container'

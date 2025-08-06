@@ -1,0 +1,17 @@
+[
+  {
+    "userId": 1,
+    "title": "Test Post 1",
+    "body": "This is the body of test post 1. It contains some sample content for testing purposes."
+  },
+  {
+    "userId": 1,
+    "title": "Test Post 2",
+    "body": "This is the body of test post 2. It also contains sample content for API testing."
+  },
+  {
+    "userId": 2,
+    "title": "Another Test Post",
+    "body": "This post belongs to user 2 and contains different test content."
+  }
+]

@@ -1,0 +1,84 @@
+# API Automation Test Framework - Build logs
+target/
+test-output/
+logs/
+allure-results/
+allure-reports/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+*.swo
+
+# Test data (sensitive)
+**/testdata/secrets/
+**/config/local.properties
+
+# Docker
+.docker/
+
+# Node modules (if any)
+node_modules/
+
+# Generated files
+*.class
+*.jar
+*.war
+*.ear
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Test results
+TEST-*.xml
+cucumber-reports/
