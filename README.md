@@ -1,5 +1,12 @@
 # REST Assured API Automation Framework
 
+## 🎥 Watch the Framework in Action
+[![REST Assured Framework Demo](https://img.youtube.com/vi/pHMoqzDw2RY/maxresdefault.jpg)](https://www.youtube.com/watch?v=pHMoqzDw2RY)
+
+*Click the thumbnail above to watch a comprehensive demo of this REST Assured framework*
+
+---
+
 A modern, scalable, and modular API automation framework built with Java 17, REST Assured, and JUnit 5. This framework provides comprehensive API testing capabilities with support for multiple environments, authentication methods, reporting, and CI/CD integration.
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
