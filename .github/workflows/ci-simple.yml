@@ -32,7 +32,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -90,7 +90,7 @@ jobs:
 
     - name: Upload Test Results
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-${{ matrix.test-suite }}-java-${{ matrix.java-version }}
         path: |
@@ -109,6 +109,7 @@ jobs:
     steps:
     - name: Final Summary
       run: |
+        # Generate final pipeline summary
         echo "## 🏁 CI/CD Pipeline Complete" >> $GITHUB_STEP_SUMMARY
         echo "Check individual job results above for detailed test information." >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
