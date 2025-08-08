@@ -164,6 +164,20 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Swagger/OpenAPI Support -->
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>2.1.16</version>
+        </dependency>
+        
+        <!-- HTTP Client for Postman Collection Import -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2.1</version>
+        </dependency>
+
         <!-- Lombok (explicitly added with Java 17 compatible version) -->
         <dependency>
             <groupId>org.projectlombok</groupId>

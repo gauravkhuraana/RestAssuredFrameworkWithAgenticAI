@@ -104,6 +104,35 @@ src/
 - Volume mounting for reports
 - Environment variable support
 
+## 🎯 Bonus Features
+
+The framework includes advanced bonus features for enhanced API testing capabilities:
+
+### ✅ **Advanced JSON Validation**
+- **JSONPath utilities** for complex response validation
+- **Path existence validation** and **array element counting**
+- **Nested object extraction** and **structure validation**
+
+### ✅ **API Import & Code Generation**
+- **Swagger/OpenAPI import** - Generate tests from API specifications
+- **Postman collection import** - Convert Postman tests to framework tests
+- **Auto-generated service classes** and **test templates**
+- **API documentation generation** from specifications
+
+### ✅ **Debug & Troubleshooting Tools**
+- **cURL command generation** for failed tests reproduction
+- **HAR file generation** for browser dev tools analysis
+- **Comprehensive debug reports** with troubleshooting suggestions
+- **Automatic artifact generation** on test failures
+
+### ✅ **Enhanced Data-Driven Testing**
+- **CSV/Excel support** for comprehensive test data management
+- **Random data generation** utilities for dynamic testing
+- **JSON test data management** with validation
+- **Parameterized test execution** with multiple data sources
+
+📖 **[Complete Bonus Features Documentation →](BONUS_FEATURES.md)**
+
 ### ✅ Test Organization
 - **Tag-based** test execution (@smoke, @regression)
 - **Test suites** for different test types
