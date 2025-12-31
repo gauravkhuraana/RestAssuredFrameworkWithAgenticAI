@@ -23,6 +23,17 @@ on:
         default: ''
         type: string
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -160,9 +171,83 @@ jobs:
         if [ -d "allure-results" ]; then
           mvn allure:report --batch-mode || echo "⚠️ Allure report generation had issues"
           echo "✅ Allure report generated"
+          
+          # Verify report was generated
+          if [ -d "target/site/allure-maven-plugin" ]; then
+            # Copy entire report to public directory for GitHub Pages
+            mkdir -p public
+            cp -r target/site/allure-maven-plugin/* public/
+            
+            # Create .nojekyll to allow underscored files/folders (_/data, etc.)
+            touch public/.nojekyll
+            
+            # Verify key files exist
+            echo "📁 Report contents:"
+            ls -la public/
+            
+            # Check for required Allure files
+            if [ -f "public/index.html" ]; then
+              echo "✅ index.html present"
+            fi
+            if [ -d "public/data" ]; then
+              echo "✅ data/ directory present"
+              ls -la public/data/
+            fi
+            if [ -d "public/export" ]; then
+              echo "✅ export/ directory present"
+            fi
+            if [ -d "public/history" ]; then
+              echo "✅ history/ directory present"
+            fi
+            if [ -d "public/widgets" ]; then
+              echo "✅ widgets/ directory present"
+            fi
+            
+            echo "✅ Allure report ready for deployment"
+          else
+            echo "❌ Allure report directory not found after generation"
+            mkdir -p public
+            echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>API Test Report</title></head><body><h1>Report Generation Failed</h1><p>Allure report could not be generated. Check the workflow logs.</p></body></html>' > public/index.html
+            touch public/.nojekyll
+          fi
         else
           echo "⚠️ No allure-results directory found"
+          # Create a placeholder page
+          mkdir -p public
+          cat > public/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API Test Report - No Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        h1 { color: #333; }
+        .info { background: #f0f0f0; padding: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>📊 API Test Report</h1>
+    <div class="info">
+        <h2>No test results available</h2>
+        <p>The test suite needs to be executed to generate the Allure report.</p>
+        <p>Trigger a new workflow run to see results here.</p>
+    </div>
+</body>
+</html>
+EOF
+          touch public/.nojekyll
         fi
+
+    - name: Setup Pages
+      if: always() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      uses: actions/configure-pages@v4
+
+    - name: Upload Pages Artifact
+      if: always() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: public/
 
     - name: Upload Test Artifacts
       if: always()
@@ -305,3 +390,25 @@ jobs:
           } else {
             console.log('Skipping status creation for pull request');
           }
+
+  # Deploy to GitHub Pages
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+    - name: Report URL
+      run: |
+        echo "## 📊 Allure Report Published!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🔗 **View Report:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The latest test results are now available at the URL above." >> $GITHUB_STEP_SUMMARY

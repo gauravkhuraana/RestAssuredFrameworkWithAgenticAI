@@ -28,6 +28,16 @@ Feel free to use this API to practice your API testing skills!
 
 ---
 
+## 📊 Live Test Reports
+
+View the latest test execution results:
+
+🔗 **[Live Allure Report](https://gauravkhuraana.github.io/RestAssuredFrameworkWithAgenticAI/)**
+
+The report is automatically updated on every push to the main branch via GitHub Actions.
+
+---
+
 A modern, scalable, and modular API automation framework built with Java 17, REST Assured, and JUnit 5. This framework provides comprehensive API testing capabilities with support for multiple environments, authentication methods, reporting, and CI/CD integration.
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
