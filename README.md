@@ -1,9 +1,30 @@
 # REST Assured API Automation Framework
 
 ## 🎥 Watch the Framework in Action
+
 [![REST Assured Framework Demo](https://img.youtube.com/vi/pHMoqzDw2RY/maxresdefault.jpg)](https://www.youtube.com/watch?v=pHMoqzDw2RY)
 
 *Click the thumbnail above to watch a comprehensive demo of this REST Assured framework*
+
+[![Practise API for Automation / Testing ](https://img.youtube.com/vi/gmSB2mWHGzU/maxresdefault.jpg)](https://www.youtube.com/watch?v=gmSB2mWHGzU)
+
+*Watch how to build API tests using Agentic AI with this framework*
+
+---
+
+## 🌐 Practice API
+
+This framework is built using a **free practice API** that you can use to learn and experiment:
+
+🔗 **[https://gauravkhurana.in/practise-api](https://gauravkhurana.in/practise-api)**
+
+The Practice API provides:
+- **Bill Payment APIs** - Complete CRUD operations for billers, payments, and transactions
+- **User Management** - Authentication and user profile endpoints
+- **File Operations** - Upload and download capabilities
+- **No authentication required** for most endpoints (perfect for learning!)
+
+Feel free to use this API to practice your API testing skills!
 
 ---
 
