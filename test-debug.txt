@@ -1,0 +1,66 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------< com.api.automation:rest-assured-framework >--------------
+[INFO] Building Rest Assured API Automation Framework 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ rest-assured-framework ---
+[INFO] Deleting E:\Automation\RestAssuredFrameworkWithAgenticAI\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ rest-assured-framework ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ rest-assured-framework ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 51 source files with javac [debug target 17] to target\classes
+[WARNING] --add-opens has no effect at compile time
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ rest-assured-framework ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ rest-assured-framework ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 36 source files with javac [debug target 17] to target\test-classes
+[WARNING] --add-opens has no effect at compile time
+[INFO] 
+[INFO] --- surefire:3.1.2:test (default-test) @ rest-assured-framework ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[WARNING] The system property groovy.antlr4 is configured twice! The property appears in <argLine/> and any of <systemPropertyVariables/>, <systemProperties/> or user property.
+[WARNING] The system property groovy.indy is configured twice! The property appears in <argLine/> and any of <systemPropertyVariables/>, <systemProperties/> or user property.
+[WARNING] The system property groovy.target.indy is configured twice! The property appears in <argLine/> and any of <systemPropertyVariables/>, <systemProperties/> or user property.
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.api.automation.tests.billpay.AuthenticationTest
+2025-12-31 17:52:57.398 [ForkJoinPool-1-worker-1] INFO  com.api.automation.config.ConfigManager - Loaded configuration for environment: dev
+2025-12-31 17:52:58.853 [ForkJoinPool-1-worker-1] INFO  com.api.automation.services.billpay.AuthService - Getting OAuth2 token for client: demo-client
+2025-12-31 17:52:58.872 [ForkJoinPool-1-worker-1] INFO  com.api.automation.client.BaseApiClient - Executing POST request to: /oauth/token
+Request method:	POST
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/oauth/token
+Proxy:			<none>
+Request params:	<none>
+Query params:	<none>
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		<none>
+Multiparts:		<none>
+Body:			<none>
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.269 s -- in com.api.automation.tests.billpay.AuthenticationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  58.361 s
+[INFO] Finished at: 2025-12-31T17:53:02+05:30
+[INFO] ------------------------------------------------------------------------

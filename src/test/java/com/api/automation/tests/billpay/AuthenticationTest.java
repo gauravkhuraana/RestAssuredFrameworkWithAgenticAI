@@ -7,7 +7,7 @@ import com.api.automation.models.billpay.TokenResponse;
 import com.api.automation.services.billpay.AuthService;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +16,19 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Authentication Tests for Bill Payment API
  * Tests all 6 authentication methods supported by the API
+ * 
+ * NOTE: Each test creates a fresh AuthService instance to ensure
+ * thread-safety and isolation when running tests in parallel.
  */
 @Epic("Bill Payment API")
 @Feature("Authentication")
 public class AuthenticationTest {
 
-    private static AuthService authService;
+    private AuthService authService;
 
-    @BeforeAll
-    static void setup() {
+    @BeforeEach
+    void setup() {
+        // Create fresh AuthService for each test to ensure isolation in parallel execution
         authService = new AuthService();
     }
 
@@ -95,7 +99,8 @@ public class AuthenticationTest {
     @Story("OAuth2 Authentication")
     @Description("Tests OAuth2 client credentials flow to obtain access token")
     void testOAuth2ClientCredentials() {
-        Response response = authService.getOAuth2Token("demo-client-id", "demo-secret-789");
+        // Using correct credentials from OpenAPI spec: demo-client / demo-secret-789
+        Response response = authService.getOAuth2Token("demo-client", "demo-secret-789");
         
         assertTrue(response.getStatusCode() == 200 || response.getStatusCode() == 201, 
             "OAuth2 token endpoint should return success");

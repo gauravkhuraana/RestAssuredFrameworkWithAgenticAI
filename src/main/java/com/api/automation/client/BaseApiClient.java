@@ -7,6 +7,7 @@ import com.api.automation.retry.RetryHandler;
 import com.api.automation.utils.JsonUtils;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 /**
  * Thread-Safe Base API client with common HTTP operations
+ * Each instance maintains its own isolated RequestSpecification
  */
 public class BaseApiClient {
     protected static final Logger logger = LoggerFactory.getLogger(BaseApiClient.class);
@@ -33,30 +35,34 @@ public class BaseApiClient {
         }
     }
     
+    // Use ThreadLocal to ensure complete isolation between parallel tests
+    private final RequestSpecBuilder specBuilder;
     protected RequestSpecification requestSpec;
 
     public BaseApiClient() {
         try {
-            // Create a completely new request specification without static RestAssured
-            RequestSpecification baseSpec = RestAssuredConfig.getDefaultRequestSpec();
+            // Create a completely new request specification builder for isolation
+            this.specBuilder = new RequestSpecBuilder()
+                .setContentType(ContentType.JSON)
+                .setAccept(ContentType.JSON)
+                .addHeader("User-Agent", "API-Automation-Framework/1.0")
+                .log(LogDetail.ALL);
             
             // Set base URI directly in the specification
             if (config != null) {
                 String baseUrl = config.getBaseUrl();
                 if (baseUrl != null && !baseUrl.isEmpty()) {
-                    this.requestSpec = new RequestSpecBuilder()
-                        .addRequestSpecification(baseSpec)
-                        .setBaseUri(baseUrl)
-                        .build();
+                    this.specBuilder.setBaseUri(baseUrl);
                     logger.debug("BaseApiClient initialized with base URI: {}", baseUrl);
                 } else {
-                    logger.warn("Base URL is null or empty, using default specification");
-                    this.requestSpec = baseSpec;
+                    logger.warn("Base URL is null or empty");
                 }
             } else {
-                logger.error("ConfigManager is null, using default specification");
-                this.requestSpec = baseSpec;
+                logger.error("ConfigManager is null");
             }
+            
+            // Build the request spec
+            this.requestSpec = this.specBuilder.build();
         } catch (Exception e) {
             logger.error("Error initializing BaseApiClient: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to initialize BaseApiClient", e);
@@ -64,26 +70,16 @@ public class BaseApiClient {
     }
 
     public BaseApiClient(RequestSpecification requestSpec) {
+        this.specBuilder = null;
         this.requestSpec = requestSpec;
     }
 
     /**
-     * Create an authenticated API client
+     * Create an authenticated API client with fresh isolated spec
      */
     public static BaseApiClient withAuthentication() {
-        RequestSpecification authSpec = RestAssuredConfig.getAuthenticatedRequestSpec();
-        
-        if (config != null) {
-            String baseUrl = config.getBaseUrl();
-            if (baseUrl != null && !baseUrl.isEmpty()) {
-                authSpec = new RequestSpecBuilder()
-                    .addRequestSpecification(authSpec)
-                    .setBaseUri(baseUrl)
-                    .build();
-            }
-        }
-        
-        return new BaseApiClient(authSpec);
+        BaseApiClient client = new BaseApiClient();
+        return client.withAuth(AuthHandler.AuthType.BEARER);
     }
 
     /**

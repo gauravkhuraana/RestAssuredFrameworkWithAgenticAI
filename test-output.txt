@@ -1,0 +1,84 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------< com.api.automation:rest-assured-framework >--------------
+[INFO] Building Rest Assured API Automation Framework 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ rest-assured-framework ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ rest-assured-framework ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ rest-assured-framework ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ rest-assured-framework ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 120 source files with javac [debug target 17] to target\test-classes
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING : 
+[INFO] -------------------------------------------------------------
+[WARNING] --add-opens has no effect at compile time
+[INFO] 1 warning
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Stream-bytesService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Relative-redirectSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Absolute-redirectService.java:[12,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Response-headersSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Basic-authService.java:[12,19] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/User-agentSmokeTest.java:[17,18] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Redirect-toSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Relative-redirectService.java:[12,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Hidden-basic-authService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Basic-authSmokeTest.java:[17,19] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Stream-bytesSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Digest-authSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Robots.txtSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Digest-authService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Robots.txtService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Absolute-redirectSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Redirect-toService.java:[12,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Hidden-basic-authSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/User-agentService.java:[12,18] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Response-headersService.java:[12,22] '{' expected
+[INFO] 20 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.797 s
+[INFO] Finished at: 2025-12-31T17:31:18+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:testCompile (default-testCompile) on project rest-assured-framework: Compilation failure: Compilation failure: 
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Stream-bytesService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Relative-redirectSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Absolute-redirectService.java:[12,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Response-headersSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Basic-authService.java:[12,19] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/User-agentSmokeTest.java:[17,18] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Redirect-toSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Relative-redirectService.java:[12,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Hidden-basic-authService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Basic-authSmokeTest.java:[17,19] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Stream-bytesSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Digest-authSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Robots.txtSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Digest-authService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Robots.txtService.java:[12,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Absolute-redirectSmokeTest.java:[17,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Redirect-toService.java:[12,22] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/smoke/Hidden-basic-authSmokeTest.java:[17,20] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/User-agentService.java:[12,18] '{' expected
+[ERROR] /E:/Automation/RestAssuredFrameworkWithAgenticAI/src/test/java/com/api/automation/tests/generated/services/Response-headersService.java:[12,22] '{' expected
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

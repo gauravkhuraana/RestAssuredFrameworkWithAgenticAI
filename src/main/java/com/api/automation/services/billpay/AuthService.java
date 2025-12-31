@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class AuthService extends BaseApiClient {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     
-    private static final String AUTH_TOKEN_ENDPOINT = "/v1/auth/token";
+    private static final String AUTH_TOKEN_ENDPOINT = "/oauth/token";
     private static final String AUTH_ME_ENDPOINT = "/v1/auth/me";
 
     /**

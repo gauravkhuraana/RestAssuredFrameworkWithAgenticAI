@@ -211,7 +211,7 @@ public class SwaggerImporter {
         String[] parts = path.split("/");
         for (String part : parts) {
             if (!part.isEmpty() && !part.startsWith("{")) {
-                return capitalize(part);
+                return sanitizeClassName(capitalize(part));
             }
         }
         return "Default";
@@ -222,6 +222,50 @@ public class SwaggerImporter {
      */
     private static String extractTestClassName(String path) {
         return extractServiceName(path) + "Smoke";
+    }
+    
+    /**
+     * Sanitize a string to be a valid Java class name
+     * - Replace hyphens, dots, and other invalid characters with empty or camelCase
+     * - Ensure starts with a letter
+     */
+    private static String sanitizeClassName(String name) {
+        if (name == null || name.isEmpty()) {
+            return "Default";
+        }
+        
+        // Replace hyphens and dots with nothing, but capitalize next letter
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = false;
+        
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            
+            if (c == '-' || c == '.' || c == '_' || !Character.isJavaIdentifierPart(c)) {
+                capitalizeNext = true;
+            } else {
+                if (capitalizeNext && Character.isLetter(c)) {
+                    result.append(Character.toUpperCase(c));
+                    capitalizeNext = false;
+                } else if (result.length() == 0 && !Character.isJavaIdentifierStart(c)) {
+                    // Skip leading characters that can't start a class name
+                    continue;
+                } else {
+                    result.append(c);
+                }
+            }
+        }
+        
+        // Ensure the result starts with uppercase letter
+        if (result.length() > 0) {
+            char first = result.charAt(0);
+            if (Character.isLetter(first) && Character.isLowerCase(first)) {
+                result.setCharAt(0, Character.toUpperCase(first));
+            }
+        }
+        
+        String sanitized = result.toString();
+        return sanitized.isEmpty() ? "Default" : sanitized;
     }
     
     /**

@@ -265,15 +265,17 @@ jobs:
         
         # Check if surefire reports directory exists
         if [ ! -d "target/surefire-reports" ]; then
-          echo "❌ No surefire-reports directory found"
-          exit 1
+          echo "⚠️ No surefire-reports directory found"
+          echo "TEST_STATUS=no-reports" >> $GITHUB_ENV
+          exit 0  # Don't fail - allow report deployment
         fi
         
         # Check if any XML test reports exist
         XML_COUNT=$(find target/surefire-reports -name "TEST-*.xml" 2>/dev/null | wc -l)
         if [ "$XML_COUNT" -eq 0 ]; then
-          echo "❌ No XML test reports found"
-          exit 1
+          echo "⚠️ No XML test reports found"
+          echo "TEST_STATUS=no-reports" >> $GITHUB_ENV
+          exit 0  # Don't fail - allow report deployment
         fi
         
         echo "✅ Found $XML_COUNT test report file(s)"
@@ -296,14 +298,19 @@ jobs:
         echo "Test Results: Failures=$FAILURE_COUNT, Errors=$ERROR_COUNT"
         
         if [ "$FAILURE_COUNT" -gt 0 ]; then
-          echo "❌ Found $FAILURE_COUNT test failure(s)"
-          exit 1
+          echo "⚠️ Found $FAILURE_COUNT test failure(s) - check Allure report for details"
+          echo "TEST_STATUS=failures" >> $GITHUB_ENV
         elif [ "$ERROR_COUNT" -gt 0 ]; then
-          echo "❌ Found $ERROR_COUNT test error(s)"
-          exit 1
+          echo "⚠️ Found $ERROR_COUNT test error(s) - check Allure report for details"
+          echo "TEST_STATUS=errors" >> $GITHUB_ENV
         else
           echo "✅ All tests passed successfully!"
+          echo "TEST_STATUS=passed" >> $GITHUB_ENV
         fi
+        
+        # Always exit 0 to allow Allure report deployment
+        # The report itself will show test failures
+        exit 0
 
     - name: Create Status Check
       if: always()

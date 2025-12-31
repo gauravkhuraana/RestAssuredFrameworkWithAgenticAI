@@ -1,0 +1,277 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------< com.api.automation:rest-assured-framework >--------------
+[INFO] Building Rest Assured API Automation Framework 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ rest-assured-framework ---
+[INFO] Copying 4 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ rest-assured-framework ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ rest-assured-framework ---
+[INFO] Copying 4 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ rest-assured-framework ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 36 source files with javac [debug target 17] to target\test-classes
+[WARNING] --add-opens has no effect at compile time
+[INFO] 
+[INFO] --- surefire:3.1.2:test (default-test) @ rest-assured-framework ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[WARNING] The system property groovy.antlr4 is configured twice! The property appears in <argLine/> and any of <systemPropertyVariables/>, <systemProperties/> or user property.
+[WARNING] The system property groovy.indy is configured twice! The property appears in <argLine/> and any of <systemPropertyVariables/>, <systemProperties/> or user property.
+[WARNING] The system property groovy.target.indy is configured twice! The property appears in <argLine/> and any of <systemPropertyVariables/>, <systemProperties/> or user property.
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.api.automation.tests.billpay.AuthenticationTest
+2025-12-31 17:53:44.762 [ForkJoinPool-1-worker-1] INFO  com.api.automation.config.ConfigManager - Loaded configuration for environment: dev
+2025-12-31 17:53:45.974 [ForkJoinPool-1-worker-1] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with custom API Key
+2025-12-31 17:53:45.976 [ForkJoinPool-1-worker-1] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:45.975 [ForkJoinPool-1-worker-2] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with auth type: NONE
+2025-12-31 17:53:45.976 [ForkJoinPool-1-worker-9] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with auth type: BEARER
+2025-12-31 17:53:45.977 [ForkJoinPool-1-worker-6] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with auth type: API_KEY
+2025-12-31 17:53:45.971 [ForkJoinPool-1-worker-4] INFO  com.api.automation.services.billpay.AuthService - Getting OAuth2 token for client: demo-client
+2025-12-31 17:53:45.979 [ForkJoinPool-1-worker-10] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with auth type: API_KEY
+2025-12-31 17:53:45.980 [ForkJoinPool-1-worker-7] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with auth type: COOKIE_SESSION
+2025-12-31 17:53:45.976 [ForkJoinPool-1-worker-3] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with custom Bearer token
+2025-12-31 17:53:45.980 [ForkJoinPool-1-worker-8] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with auth type: API_KEY_QUERY
+2025-12-31 17:53:45.980 [ForkJoinPool-1-worker-5] INFO  com.api.automation.services.billpay.AuthService - Getting current user info with auth type: BASIC
+2025-12-31 17:53:45.994 [ForkJoinPool-1-worker-3] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:45.996 [ForkJoinPool-1-worker-2] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:45.997 [ForkJoinPool-1-worker-10] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:46.003 [ForkJoinPool-1-worker-6] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:46.004 [ForkJoinPool-1-worker-9] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:46.005 [ForkJoinPool-1-worker-5] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:46.041 [ForkJoinPool-1-worker-7] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:46.070 [ForkJoinPool-1-worker-8] INFO  com.api.automation.client.BaseApiClient - Executing GET request to: /v1/auth/me
+2025-12-31 17:53:46.074 [ForkJoinPool-1-worker-4] INFO  com.api.automation.client.BaseApiClient - Executing POST request to: /oauth/token
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	GET
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/v1/auth/me?api_key=demo-api-key-123&grant_type=client_credentials&client_id=demo-client&client_secret=demo-secret-789
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+Request method:	POST
+Request URI:	https://billpay-api.gauravkhurana-practice-api.workers.dev/oauth/token?api_key=demo-api-key-123
+Proxy:			<none>
+Request params:	<none>
+Query params:	api_key=demo-api-key-123
+Form params:	grant_type=client_credentials
+				client_id=demo-client
+				client_secret=demo-secret-789
+Path params:	<none>
+Headers:		Accept=application/json, application/javascript, text/javascript, text/json
+				User-Agent=API-Automation-Framework/1.0
+				X-API-Key=invalid-api-key-xyz
+				X-API-Key=demo-api-key-123
+				Authorization=Bearer demo-jwt-token-456
+				Authorization=Basic ZGVtbzpwYXNzd29yZDEyMw==
+				Content-Type=application/x-www-form-urlencoded; charset=ISO-8859-1
+Cookies:		session_id=demo-session-abc123
+Multiparts:		<none>
+Body:			<none>
+[ERROR] Tests run: 10, Failures: 10, Errors: 0, Skipped: 0, Time elapsed: 4.804 s <<< FAILURE! -- in com.api.automation.tests.billpay.AuthenticationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   AuthenticationTest.testApiKeyHeaderAuth:39 API Key auth should succeed ==> expected: <200> but was: <400>
+[ERROR]   AuthenticationTest.testApiKeyQueryAuth:56 API Key query auth should succeed ==> expected: <200> but was: <400>
+[ERROR]   AuthenticationTest.testBasicAuth:78 Basic auth should succeed ==> expected: <200> but was: <400>
+[ERROR]   AuthenticationTest.testBearerTokenAuth:67 Bearer token auth should succeed ==> expected: <200> but was: <400>
+[ERROR]   AuthenticationTest.testCookieSessionAuth:89 Cookie session auth should succeed ==> expected: <200> but was: <400>
+[ERROR]   AuthenticationTest.testExpiredTokenHandling:161 Expired token should be handled appropriately ==> expected: <true> but was: <false>
+[ERROR]   AuthenticationTest.testGetCurrentUserProfile:144 Should get current user profile ==> expected: <200> but was: <400>
+[ERROR]   AuthenticationTest.testInvalidApiKeyRejected:132 Invalid API key should be handled, got status: 400 ==> expected: <true> but was: <false>
+[ERROR]   AuthenticationTest.testNoAuthFails:118 Request without auth should be handled appropriately ==> expected: <true> but was: <false>
+[ERROR]   AuthenticationTest.testOAuth2ClientCredentials:101 OAuth2 token endpoint should return success ==> expected: <true> but was: <false>
+[INFO] 
+[ERROR] Tests run: 10, Failures: 10, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  25.892 s
+[INFO] Finished at: 2025-12-31T17:53:50+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.1.2:test (default-test) on project rest-assured-framework: There are test failures.
+[ERROR] 
+[ERROR] Please refer to E:\Automation\RestAssuredFrameworkWithAgenticAI\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
