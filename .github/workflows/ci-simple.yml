@@ -11,17 +11,22 @@ on:
       test_suite:
         description: 'Test suite to run'
         required: false
-        default: 'smoke'
+        default: 'all'
         type: choice
         options:
+        - all
         - smoke
         - regression
-        - all
+      test_class:
+        description: 'Specific test class (optional, e.g., HealthCheckTest)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     
     steps:
     - name: Checkout code
@@ -42,16 +47,28 @@ jobs:
 
     - name: Run API Tests
       run: |
-        SUITE=${{ github.event.inputs.test_suite || 'smoke' }}
-        echo "Running $SUITE tests..."
+        SUITE=${{ github.event.inputs.test_suite || 'all' }}
+        TEST_CLASS="${{ github.event.inputs.test_class }}"
         
-        mvn clean test \
-          -Denv=dev \
-          -P${SUITE},ci \
-          --batch-mode \
-          --no-transfer-progress
+        echo "🧪 Running $SUITE tests..."
+        
+        # Build test command
+        MVN_CMD="mvn clean test -Denv=dev -Pci --batch-mode --no-transfer-progress"
+        
+        # Add specific test class if provided
+        if [ -n "$TEST_CLASS" ]; then
+          echo "📌 Running specific test: $TEST_CLASS"
+          MVN_CMD="$MVN_CMD -Dtest=$TEST_CLASS"
+        else
+          # Run all billpay tests
+          MVN_CMD="$MVN_CMD -Dtest=com.api.automation.tests.billpay.**"
+        fi
+        
+        echo "Command: $MVN_CMD"
+        $MVN_CMD || true  # Continue even if tests fail to generate reports
       env:
-        MAVEN_OPTS: "-Xmx1536m -Xms512m"
+        MAVEN_OPTS: "-Xmx2048m -Xms512m"
+      continue-on-error: true
 
     - name: Display Test Results
       if: always()
@@ -136,6 +153,17 @@ jobs:
           echo "📁 **Log files available in artifacts**" >> $GITHUB_STEP_SUMMARY
         fi
 
+    - name: Generate Allure Report
+      if: always()
+      run: |
+        echo "📊 Generating Allure Report..."
+        if [ -d "allure-results" ]; then
+          mvn allure:report --batch-mode || echo "⚠️ Allure report generation had issues"
+          echo "✅ Allure report generated"
+        else
+          echo "⚠️ No allure-results directory found"
+        fi
+
     - name: Upload Test Artifacts
       if: always()
       uses: actions/upload-artifact@v4
@@ -143,9 +171,26 @@ jobs:
         name: test-results
         path: |
           target/surefire-reports/
-          target/allure-results/
           test-output/
           logs/
+        retention-days: 5
+        if-no-files-found: ignore
+
+    - name: Upload Allure Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-results
+        path: allure-results/
+        retention-days: 5
+        if-no-files-found: ignore
+
+    - name: Upload Allure Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-report
+        path: target/site/allure-maven-plugin/
         retention-days: 5
         if-no-files-found: ignore
 

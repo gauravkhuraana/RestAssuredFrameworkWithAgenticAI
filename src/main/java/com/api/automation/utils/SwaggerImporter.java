@@ -230,7 +230,7 @@ public class SwaggerImporter {
     private static String generateModelClass(String className, Object schema, String packageName) {
         StringBuilder classContent = new StringBuilder();
         
-        classContent.append("package ").append(packageName).append(".tests.generated.models;\n\n");
+        classContent.append("package ").append("com.api.automation").append(".tests.generated.models;\n\n");
         classContent.append("import com.fasterxml.jackson.annotation.JsonProperty;\n");
         classContent.append("import lombok.Data;\n\n");
         classContent.append("/**\n");
@@ -272,7 +272,7 @@ public class SwaggerImporter {
     private static String generateServiceClass(String serviceName, String methods, String packageName) {
         StringBuilder classContent = new StringBuilder();
         
-        classContent.append("package ").append(packageName).append(".tests.generated.services;\n\n");
+        classContent.append("package ").append("com.api.automation").append(".tests.generated.services;\n\n");
         classContent.append("import com.api.automation.client.BaseApiClient;\n");
         classContent.append("import io.restassured.response.Response;\n");
         classContent.append("import org.slf4j.Logger;\n");
@@ -343,7 +343,7 @@ public class SwaggerImporter {
     private static String generateTestClass(String className, String path, PathItem pathItem, String packageName) {
         StringBuilder classContent = new StringBuilder();
         
-        classContent.append("package ").append(packageName).append(".tests.generated.smoke;\n\n");
+        classContent.append("package ").append("com.api.automation").append(".tests.generated.smoke;\n\n");
         classContent.append("import com.api.automation.tests.base.BaseTest;\n");
         classContent.append("import io.restassured.RestAssured;\n");
         classContent.append("import io.restassured.response.Response;\n");

@@ -137,4 +137,20 @@ public class ConfigManager {
     public String getApiKey() {
         return getProperty("auth.api.key", "");
     }
+
+    public String getSessionId() {
+        return getProperty("auth.session.id", "");
+    }
+
+    public String getOAuth2ClientId() {
+        return getProperty("auth.oauth2.client.id", "");
+    }
+
+    public String getOAuth2ClientSecret() {
+        return getProperty("auth.oauth2.client.secret", "");
+    }
+
+    public String getOAuth2TokenUrl() {
+        return getProperty("auth.oauth2.token.url", "/v1/auth/token");
+    }
 }

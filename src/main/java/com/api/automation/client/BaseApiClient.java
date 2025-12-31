@@ -13,6 +13,7 @@ import io.restassured.specification.RequestSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -169,6 +170,58 @@ public class BaseApiClient {
      */
     public BaseApiClient withPathParam(String name, Object value) {
         this.requestSpec.pathParam(name, value);
+        return this;
+    }
+
+    /**
+     * Set multipart file for upload
+     */
+    public BaseApiClient withMultiPart(String controlName, File file) {
+        this.requestSpec.multiPart(controlName, file);
+        return this;
+    }
+
+    /**
+     * Set multipart file for upload with custom content type
+     */
+    public BaseApiClient withMultiPart(String controlName, File file, String mimeType) {
+        this.requestSpec.multiPart(controlName, file, mimeType);
+        return this;
+    }
+
+    /**
+     * Set multipart file for upload with filename
+     */
+    public BaseApiClient withMultiPart(String controlName, String fileName, byte[] content, String mimeType) {
+        this.requestSpec.multiPart(controlName, fileName, content, mimeType);
+        return this;
+    }
+
+    /**
+     * Set multiple files for upload
+     */
+    public BaseApiClient withMultiParts(String controlName, File... files) {
+        for (File file : files) {
+            this.requestSpec.multiPart(controlName, file);
+        }
+        return this;
+    }
+
+    /**
+     * Set form parameter (for multipart requests)
+     */
+    public BaseApiClient withFormParam(String name, Object value) {
+        this.requestSpec.formParam(name, value);
+        return this;
+    }
+
+    /**
+     * Set multiple form parameters
+     */
+    public BaseApiClient withFormParams(Map<String, Object> formParams) {
+        if (formParams != null && !formParams.isEmpty()) {
+            this.requestSpec.formParams(formParams);
+        }
         return this;
     }
 
