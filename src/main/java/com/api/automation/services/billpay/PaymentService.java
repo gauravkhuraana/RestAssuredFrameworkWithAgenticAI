@@ -9,6 +9,7 @@ import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -221,7 +222,7 @@ public class PaymentService extends BaseApiClient {
      * Process payment end-to-end
      * Creates payment and waits for completion
      */
-    public Payment processPayment(String billId, String userId, String paymentMethodId, Money amount) {
+    public Payment processPayment(String billId, String userId, String paymentMethodId, BigDecimal amount) {
         PaymentInput input = PaymentInput.simple(billId, userId, paymentMethodId, amount);
         return createPaymentAndReturn(input);
     }

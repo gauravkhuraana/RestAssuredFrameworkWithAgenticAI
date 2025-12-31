@@ -136,10 +136,7 @@ public class PaymentFlowTests {
     @Story("Payment Creation")
     @Description("Tests creating a new payment for an existing bill")
     void testCreatePayment() {
-        Money amount = Money.builder()
-            .value(BigDecimal.valueOf(100.00))
-            .currency("USD")
-            .build();
+        BigDecimal amount = BigDecimal.valueOf(100.00);
 
         PaymentInput newPayment = PaymentInput.builder()
             .billId("1")
@@ -183,10 +180,7 @@ public class PaymentFlowTests {
     void testUpdatePaymentStatus() {
         String testPaymentId = createdPaymentId != null ? createdPaymentId : "1";
         
-        Money amount = Money.builder()
-            .value(BigDecimal.valueOf(100.00))
-            .currency("USD")
-            .build();
+        BigDecimal amount = BigDecimal.valueOf(100.00);
 
         PaymentInput updatePayment = PaymentInput.builder()
             .billId("1")
@@ -249,10 +243,7 @@ public class PaymentFlowTests {
     @Description("Tests cancelling a pending payment")
     void testCancelPayment() {
         // Create a new pending payment to cancel
-        Money amount = Money.builder()
-            .value(BigDecimal.valueOf(50.00))
-            .currency("USD")
-            .build();
+        BigDecimal amount = BigDecimal.valueOf(50.00);
 
         PaymentInput cancelPayment = PaymentInput.builder()
             .billId("1")
@@ -306,10 +297,7 @@ public class PaymentFlowTests {
         assertEquals(200, methodsResponse.getStatusCode(), "Should get payment methods");
         
         // Step 3: Create payment
-        Money amount = Money.builder()
-            .value(BigDecimal.valueOf(75.00))
-            .currency("USD")
-            .build();
+        BigDecimal amount = BigDecimal.valueOf(75.00);
 
         PaymentInput e2ePayment = PaymentInput.builder()
             .billId("1")

@@ -98,15 +98,12 @@ public class BillTests {
     @Story("Bill Creation")
     @Description("Tests creating a new bill in the system")
     void testCreateBill() {
-        Money amount = Money.builder()
-            .value(BigDecimal.valueOf(150.00))
-            .currency("USD")
-            .build();
+        BigDecimal amount = BigDecimal.valueOf(150.00);
 
         BillInput newBill = BillInput.builder()
             .billerId("1")
             .userId("1")
-            .consumerNumber("CONS-TEST-001")
+            .customerIdentifier("CONS-TEST-001")
             .amount(amount)
             .dueDate(LocalDate.now().plusDays(30).toString())
             .description("Automated test bill")
@@ -147,15 +144,12 @@ public class BillTests {
     void testUpdateBillStatus() {
         String testBillId = createdBillId != null ? createdBillId : "1";
         
-        Money amount = Money.builder()
-            .value(BigDecimal.valueOf(175.00))
-            .currency("USD")
-            .build();
+        BigDecimal amount = BigDecimal.valueOf(175.00);
 
         BillInput updateBill = BillInput.builder()
             .billerId("1")
             .userId("1")
-            .consumerNumber("CONS-TEST-001")
+            .customerIdentifier("CONS-TEST-001")
             .amount(amount)
             .dueDate(LocalDate.now().plusDays(25).toString())
             .description("Updated test bill - paid")

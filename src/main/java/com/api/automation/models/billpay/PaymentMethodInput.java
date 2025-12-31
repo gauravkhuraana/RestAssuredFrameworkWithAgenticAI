@@ -24,6 +24,9 @@ public class PaymentMethodInput {
     @JsonProperty("type")
     private PaymentMethodType type;
 
+    @JsonProperty("displayName")
+    private String displayName;
+
     @JsonProperty("name")
     private String name;
 
@@ -38,8 +41,20 @@ public class PaymentMethodInput {
     @JsonProperty("cardNumber")
     private String cardNumber;
 
+    @JsonProperty("cardLastFour")
+    private String cardLastFour;
+
+    @JsonProperty("cardNetwork")
+    private String cardNetwork;
+
     @JsonProperty("cardHolderName")
     private String cardHolderName;
+
+    @JsonProperty("cardExpiryMonth")
+    private Integer cardExpiryMonth;
+
+    @JsonProperty("cardExpiryYear")
+    private Integer cardExpiryYear;
 
     @JsonProperty("expiryMonth")
     private String expiryMonth;

@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * Input model for creating/processing a new payment
  */
@@ -27,7 +29,7 @@ public class PaymentInput {
     private String paymentMethodId;
 
     @JsonProperty("amount")
-    private Money amount;
+    private BigDecimal amount;
 
     @JsonProperty("savePaymentMethod")
     private Boolean savePaymentMethod;
@@ -38,7 +40,7 @@ public class PaymentInput {
     /**
      * Create a simple payment input with required fields
      */
-    public static PaymentInput simple(String billId, String userId, String paymentMethodId, Money amount) {
+    public static PaymentInput simple(String billId, String userId, String paymentMethodId, BigDecimal amount) {
         return PaymentInput.builder()
                 .billId(billId)
                 .userId(userId)

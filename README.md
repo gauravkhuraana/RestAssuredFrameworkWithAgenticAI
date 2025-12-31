@@ -164,6 +164,142 @@ The framework includes advanced bonus features for enhanced API testing capabili
 
 📖 **[Complete Bonus Features Documentation →](BONUS_FEATURES.md)**
 
+---
+
+## 🔗 End-to-End API Chaining Flow
+
+The framework includes comprehensive **End-to-End scenario tests** that demonstrate real-world API chaining - where the response from one API call is used as input for subsequent API calls.
+
+### 📊 Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                        COMPLETE BILL PAYMENT E2E FLOW                               │
+│                           (API Chaining Demonstration)                              │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────────┐
+    │   Step 0     │
+    │ Create User  │
+    │   POST       │
+    │  /v1/users   │
+    └──────┬───────┘
+           │
+           │  userId: "user-abc123"
+           ▼
+    ┌──────────────┐
+    │   Step 1     │
+    │Create Biller │
+    │   POST       │
+    │ /v1/billers  │
+    └──────┬───────┘
+           │
+           │  billerId: "biller-xyz789"
+           ▼
+    ┌──────────────┐
+    │   Step 2     │◄─── Uses: userId + billerId
+    │ Create Bill  │
+    │   POST       │
+    │  /v1/bills   │
+    └──────┬───────┘
+           │
+           │  billId: "bill-def456"
+           ▼
+    ┌──────────────┐
+    │   Step 3     │◄─── Uses: userId
+    │Create Payment│
+    │   Method     │
+    │   POST       │
+    │/v1/payment-  │
+    │   methods    │
+    └──────┬───────┘
+           │
+           │  paymentMethodId: "pm-ghi012"
+           ▼
+    ┌──────────────┐
+    │   Step 4     │◄─── Uses: billId + userId + paymentMethodId
+    │Make Payment  │     (COMPLETE API CHAINING!)
+    │   POST       │
+    │ /v1/payments │
+    └──────┬───────┘
+           │
+           │  paymentId: "pay-jkl345"
+           ▼
+    ┌──────────────┐
+    │   Step 5     │◄─── Uses: paymentId
+    │   Verify     │
+    │   Payment    │
+    │    GET       │
+    │/v1/payments/ │
+    │    {id}      │
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │   Step 6     │◄─── Uses: billId
+    │ Verify Bill  │
+    │   Status     │
+    │    GET       │
+    │ /v1/bills/   │
+    │    {id}      │
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │   Cleanup    │◄─── Uses: ALL IDs
+    │  Delete All  │
+    │  Test Data   │
+    └──────────────┘
+```
+
+### 📝 High-Level Steps
+
+| Step | Action | API Endpoint | Input | Output (Chained) |
+|------|--------|--------------|-------|------------------|
+| **0** | Create User | `POST /v1/users` | email, firstName, lastName | `userId` ➡️ |
+| **1** | Create Biller | `POST /v1/billers` | name, displayName, category | `billerId` ➡️ |
+| **2** | Create Bill | `POST /v1/bills` | `userId`, `billerId`, amount, customerIdentifier | `billId` ➡️ |
+| **3** | Add Payment Method | `POST /v1/payment-methods` | `userId`, type, cardDetails | `paymentMethodId` ➡️ |
+| **4** | Make Payment | `POST /v1/payments` | `billId`, `userId`, `paymentMethodId`, amount | `paymentId` ➡️ |
+| **5** | Verify Payment | `GET /v1/payments/{id}` | `paymentId` | Payment details |
+| **6** | Verify Bill Status | `GET /v1/bills/{id}` | `billId` | Bill status (PAID) |
+| **Cleanup** | Delete Test Data | `DELETE` endpoints | All created IDs | Clean state |
+
+### 🎯 What This Demonstrates
+
+1. **API Chaining**: Response IDs from one API are passed to subsequent APIs
+2. **Data Dependencies**: Bill requires User + Biller, Payment requires Bill + PaymentMethod
+3. **Real-World Workflow**: Mimics actual bill payment business process
+4. **Test Data Management**: Proper cleanup of created resources
+
+### 🏃‍♂️ Run the E2E Tests
+
+```bash
+# Run E2E scenario tests
+mvn clean test -Dtest=EndToEndScenarioTests -Denv=dev
+
+# Run with verbose output
+mvn clean test -Dtest=EndToEndScenarioTests -Denv=dev -X
+```
+
+### 📁 Test File Location
+
+```
+src/test/java/com/api/automation/tests/billpay/EndToEndScenarioTests.java
+```
+
+### 💡 Practice Exercises
+
+Try extending the E2E tests with these exercises:
+
+1. **Add a second payment method** and switch between them
+2. **Create multiple bills** for the same biller and pay them in a loop
+3. **Implement a partial payment** scenario (pay less than bill amount)
+4. **Add error handling** for when a user tries to pay an already-paid bill
+5. **Create a refund flow** and verify the bill status changes back
+
+---
+
 ### ✅ Test Organization
 - **Tag-based** test execution (@smoke, @regression)
 - **Test suites** for different test types

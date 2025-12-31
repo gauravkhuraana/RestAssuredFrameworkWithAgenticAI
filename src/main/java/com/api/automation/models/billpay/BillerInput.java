@@ -23,6 +23,9 @@ public class BillerInput {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("displayName")
+    private String displayName;
+
     @JsonProperty("category")
     private BillerCategory category;
 

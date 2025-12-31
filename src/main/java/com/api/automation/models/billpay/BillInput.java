@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * Input model for creating a new bill
  */
@@ -22,6 +24,9 @@ public class BillInput {
 
     @JsonProperty("billerId")
     private String billerId;
+
+    @JsonProperty("customerIdentifier")
+    private String customerIdentifier;
 
     @JsonProperty("consumerNumber")
     private String consumerNumber;
@@ -39,7 +44,7 @@ public class BillInput {
     private String dueDate;
 
     @JsonProperty("amount")
-    private Money amount;
+    private BigDecimal amount;
 
     @JsonProperty("billPeriod")
     private String billPeriod;
@@ -53,11 +58,11 @@ public class BillInput {
     /**
      * Create a simple bill input with required fields
      */
-    public static BillInput simple(String userId, String billerId, String consumerNumber, Money amount) {
+    public static BillInput simple(String userId, String billerId, String customerIdentifier, BigDecimal amount) {
         return BillInput.builder()
                 .userId(userId)
                 .billerId(billerId)
-                .consumerNumber(consumerNumber)
+                .customerIdentifier(customerIdentifier)
                 .amount(amount)
                 .build();
     }

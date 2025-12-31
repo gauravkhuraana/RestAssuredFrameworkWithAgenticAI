@@ -214,28 +214,7 @@ jobs:
           echo "⚠️ No allure-results directory found"
           # Create a placeholder page
           mkdir -p public
-          cat > public/index.html << 'EOF'
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>API Test Report - No Results</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
-        h1 { color: #333; }
-        .info { background: #f0f0f0; padding: 20px; border-radius: 8px; }
-    </style>
-</head>
-<body>
-    <h1>📊 API Test Report</h1>
-    <div class="info">
-        <h2>No test results available</h2>
-        <p>The test suite needs to be executed to generate the Allure report.</p>
-        <p>Trigger a new workflow run to see results here.</p>
-    </div>
-</body>
-</html>
-EOF
+          echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>API Test Report - No Results</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:50px auto;padding:20px}h1{color:#333}.info{background:#f0f0f0;padding:20px;border-radius:8px}</style></head><body><h1>📊 API Test Report</h1><div class="info"><h2>No test results available</h2><p>The test suite needs to be executed to generate the Allure report.</p><p>Trigger a new workflow run to see results here.</p></div></body></html>' > public/index.html
           touch public/.nojekyll
         fi
 
